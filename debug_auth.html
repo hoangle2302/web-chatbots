@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Auth API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        .info {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Auth API</h1>
+        
+        <!-- Test Connection -->
+        <div class="section">
+            <h3>1. Test Database Connection</h3>
+            <div class="info">Kiểm tra kết nối database và cấu hình</div>
+            <button onclick="testConnection()">Test Connection</button>
+            <div id="connection-result" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Register -->
+        <div class="section">
+            <h3>2. Đăng ký tài khoản</h3>
+            <div class="info">Tạo tài khoản mới để test</div>
+            <input type="text" id="reg-name" placeholder="Tên của bạn" value="Test User">
+            <input type="email" id="reg-email" placeholder="Email" value="test@example.com">
+            <input type="password" id="reg-password" placeholder="Mật khẩu" value="123456">
+            <button onclick="testRegister()">Đăng ký</button>
+            <div id="register-result" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Login -->
+        <div class="section">
+            <h3>3. Đăng nhập</h3>
+            <div class="info">Sử dụng tài khoản đã đăng ký để test đăng nhập</div>
+            <input type="email" id="login-email" placeholder="Email" value="test@example.com">
+            <input type="password" id="login-password" placeholder="Mật khẩu" value="123456">
+            <button onclick="testLogin()">Đăng nhập</button>
+            <div id="login-result" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Check Status -->
+        <div class="section">
+            <h3>4. Kiểm tra trạng thái</h3>
+            <div class="info">Xem thông tin user hiện tại</div>
+            <button onclick="checkStatus()">Check Status</button>
+            <div id="status-result" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Logout -->
+        <div class="section">
+            <h3>5. Đăng xuất</h3>
+            <div class="info">Xóa session và đăng xuất</div>
+            <button onclick="testLogout()">Đăng xuất</button>
+            <div id="logout-result" class="response" style="display:none;"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8003/backend/api/auth_simple.php';
+
+        async function makeRequest(action, data = null, method = 'GET') {
+            try {
+                let url = `${API_BASE}?action=${action}`;
+                
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin'
+                };
+
+                if (data && method === 'POST') {
+                    options.body = JSON.stringify(data);
+                }
+
+                console.log(`Making request: ${method} ${url}`, data);
+
+                const response = await fetch(url, options);
+                const responseText = await response.text();
+                
+                console.log('Response status:', response.status);
+                console.log('Response text:', responseText);
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    throw new Error(`Invalid JSON response: ${responseText}`);
+                }
+
+                return {
+                    success: response.ok && result.success,
+                    data: result,
+                    status: response.status,
+                    rawResponse: responseText
+                };
+
+            } catch (error) {
+                console.error('Request error:', error);
+                return {
+                    success: false,
+                    error: error.message,
+                    data: null
+                };
+            }
+        }
+
+        function showResult(elementId, result, action) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            
+            let output = `=== ${action.toUpperCase()} RESULT ===\n\n`;
+            
+            if (result.success) {
+                element.className = 'response success';
+                output += `✅ SUCCESS\n\n`;
+                output += `Response Data:\n${JSON.stringify(result.data, null, 2)}`;
+            } else {
+                element.className = 'response error';
+                output += `❌ ERROR\n\n`;
+                if (result.error) {
+                    output += `Error: ${result.error}\n`;
+                }
+                if (result.data) {
+                    output += `Response Data:\n${JSON.stringify(result.data, null, 2)}`;
+                }
+            }
+            
+            if (result.status) {
+                output += `\n\nHTTP Status: ${result.status}`;
+            }
+            
+            if (result.rawResponse) {
+                output += `\n\nRaw Response:\n${result.rawResponse}`;
+            }
+            
+            element.textContent = output;
+        }
+
+        async function testConnection() {
+            const result = await makeRequest('status');
+            showResult('connection-result', result, 'Connection Test');
+        }
+
+        async function testRegister() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            if (!name || !email || !password) {
+                alert('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+
+            const result = await makeRequest('register', {
+                name: name,
+                email: email,
+                password: password
+            }, 'POST');
+
+            showResult('register-result', result, 'Register');
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                alert('Vui lòng điền email và mật khẩu!');
+                return;
+            }
+
+            const result = await makeRequest('login', {
+                email: email,
+                password: password
+            }, 'POST');
+
+            showResult('login-result', result, 'Login');
+        }
+
+        async function checkStatus() {
+            const result = await makeRequest('status');
+            showResult('status-result', result, 'Status Check');
+        }
+
+        async function testLogout() {
+            const result = await makeRequest('logout');
+            showResult('logout-result', result, 'Logout');
+        }
+
+        // Auto test connection on page load
+        window.onload = function() {
+            console.log('Page loaded, testing connection...');
+            testConnection();
+        };
+    </script>
+</body>
+</html>
