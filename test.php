@@ -1,0 +1,1 @@
+<?php echo "Hello from ChatBots folder: " . __DIR__; ?>
