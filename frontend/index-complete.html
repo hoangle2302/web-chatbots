@@ -1,0 +1,2379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HngLe AI - Smart Assistant</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    /* Additional styles for login/register forms */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(5px);
+    }
+
+    .auth-overlay.show {
+      display: flex;
+    }
+
+    .auth-form {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+      animation: authSlideIn 0.3s ease-out;
+    }
+
+    @keyframes authSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-header h2 {
+      margin: 0 0 0.5rem 0;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+    }
+
+    .auth-header p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    .auth-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .auth-switch {
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .auth-switch a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-switch a:hover {
+      text-decoration: underline;
+    }
+
+    .close-auth {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-auth:hover {
+      background: var(--border-color);
+    }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow-lg);
+      min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .user-dropdown.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      border-radius: 8px;
+      margin: 0.25rem;
+    }
+
+    .dropdown-item:hover {
+      background: var(--background-secondary);
+    }
+
+    .dropdown-item i {
+      width: 16px;
+      text-align: center;
+    }
+
+    .error-message {
+      background: #fee;
+      color: #c53030;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      border: 1px solid #fecaca;
+    }
+
+    .success-message {
+      background: #f0fff4;
+      color: #2f855a;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      border: 1px solid #9ae6b4;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .guest-mode {
+      text-align: center;
+      padding: 1rem;
+      background: var(--background-secondary);
+      border-radius: 10px;
+      margin: 1rem;
+    }
+
+    .guest-mode p {
+      margin: 0 0 1rem 0;
+      color: var(--text-secondary);
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .auth-buttons button {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .login-btn {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .register-btn {
+      /* background: white; */
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+
+    .login-btn:hover, .register-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Chat History Styles */
+    .chat-history-section {
+      padding: 0 1rem 1rem 1rem;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .history-header h3 {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .history-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .history-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .history-search {
+      margin-bottom: 1rem;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .history-search input {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: white;
+      font-size: 0.875rem;
+      box-sizing: border-box;
+    }
+
+    .history-search input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .history-search input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .chat-history-item {
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .chat-history-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(4px);
+    }
+
+    .chat-history-item.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-left: 3px solid var(--primary-color);
+    }
+
+    .chat-item-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+    }
+
+    .chat-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .chat-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-title {
+      display: block;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-preview {
+      display: block;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.75rem;
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-time {
+      display: block;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.7rem;
+    }
+
+    .chat-item-actions {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: flex;
+      gap: 0.25rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .chat-history-item:hover .chat-item-actions {
+      opacity: 1;
+    }
+
+    .chat-action-btn {
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    .chat-action-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    /* AI Model Selector Styles */
+    .ai-model-selector {
+      position: relative;
+      margin-right: 0.5rem;
+    }
+
+    .model-select {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 10px 40px 10px 15px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 200px;
+      max-width: 280px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 16 16'%3e%3cpath d='M7.247 10.14L2.451 4.658C1.885 4.013 2.345 3 3.204 3h9.592a1 1 0 0 1 .753 1.659L8.753 10.14a1 1 0 0 1-1.506 0z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 14px;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative;
+      z-index: 100;
+    }
+
+    .model-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .model-select option {
+      background: #2c3e50;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      font-weight: normal;
+    }
+    
+    .model-select option:hover {
+      background: #34495e !important;
+    }
+    
+    .model-select option:checked,
+    .model-select option:selected {
+      background: var(--primary-color) !important;
+      color: white !important;
+    }
+    
+    .model-select optgroup {
+      background: #34495e;
+      color: #ecf0f1;
+      font-weight: bold;
+      font-style: normal;
+      padding: 6px 10px;
+      border: none;
+    }
+    
+    .model-select optgroup option {
+      background: #2c3e50;
+      color: white;
+      font-weight: normal;
+      padding-left: 20px;
+    }
+
+    .model-select:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--primary-color);
+    }
+
+    /* Delete Confirmation Modal */
+    .delete-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+      backdrop-filter: blur(5px);
+    }
+
+    .delete-modal.show {
+      display: flex;
+    }
+
+    .delete-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .delete-content h3 {
+      margin: 0 0 1rem 0;
+      color: #dc3545;
+      font-size: 1.25rem;
+    }
+
+    .delete-content p {
+      margin: 0 0 1.5rem 0;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .delete-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .delete-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .delete-confirm {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-confirm:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .delete-cancel {
+      background: #6c757d;
+      color: white;
+    }
+
+    .delete-cancel:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .model-select {
+        min-width: 140px;
+        max-width: 180px;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+      }
+      
+      .ai-model-selector {
+        margin-right: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Authentication Overlay -->
+  <div class="auth-overlay" id="authOverlay">
+    <!-- Login Form -->
+    <div class="auth-form" id="loginForm">
+      <button class="close-auth" onclick="closeAuth()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="auth-header">
+        <h2><i class="fas fa-sign-in-alt"></i> Đăng Nhập</h2>
+        <p>Chào mừng bạn quay trở lại!</p>
+      </div>
+      <div id="loginError" class="error-message" style="display: none;"></div>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="Nhập email của bạn" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Mật khẩu</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="Nhập mật khẩu" required>
+        </div>
+        <button type="submit" class="auth-btn" id="loginBtn">
+          Đăng Nhập
+        </button>
+      </form>
+      <div class="auth-switch">
+        Chưa có tài khoản? <a href="#" onclick="showRegister()">Đăng ký ngay</a>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div class="auth-form" id="registerForm" style="display: none;">
+      <button class="close-auth" onclick="closeAuth()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="auth-header">
+        <h2><i class="fas fa-user-plus"></i> Đăng Ký</h2>
+        <p>Tạo tài khoản mới để bắt đầu</p>
+      </div>
+      <div id="registerError" class="error-message" style="display: none;"></div>
+      <div id="registerSuccess" class="success-message" style="display: none;"></div>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="registerName">Họ và tên</label>
+          <input type="text" id="registerName" class="form-input" placeholder="Nhập họ và tên" required>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" class="form-input" placeholder="Nhập email của bạn" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Mật khẩu</label>
+          <input type="password" id="registerPassword" class="form-input" placeholder="Tối thiểu 6 ký tự" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Xác nhận mật khẩu</label>
+          <input type="password" id="confirmPassword" class="form-input" placeholder="Nhập lại mật khẩu" required>
+        </div>
+        <button type="submit" class="auth-btn" id="registerBtn">
+          Đăng Ký
+        </button>
+      </form>
+      <div class="auth-switch">
+        Đã có tài khoản? <a href="#" onclick="showLogin()">Đăng nhập</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" onclick="toggleSidebar()" style="display: none;">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Enhanced Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fas fa-robot"></i> Chatbots AI</h2>
+      <p id="sidebarSubtitle">Your intelligent companion</p>
+    </div>
+    
+    <button class="new-chat-btn" onclick="startNewChat()">
+      <i class="fas fa-plus"></i>
+      Cuộc trò chuyện mới
+    </button>
+    
+    <!-- Guest Mode -->
+    <div class="guest-mode" id="guestMode">
+      <p>Đăng nhập để lưu lịch sử chat và truy cập đầy đủ tính năng</p>
+      <div class="auth-buttons">
+        <button class="login-btn" onclick="showLogin()">
+          <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+        </button>
+        <button class="register-btn" onclick="showRegister()">
+          <i class="fas fa-user-plus"></i> Đăng Ký
+        </button>
+      </div>
+    </div>
+
+    <!-- User Info (for logged in users) -->
+    <div class="user-info" id="userInfo" style="display: none;">
+      <div class="user-profile">
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="user-details">
+          <h4 id="userName">Người dùng</h4>
+          <p id="userEmail">user@example.com</p>
+        </div>
+        <div class="user-menu">
+          <button class="action-btn" onclick="toggleUserDropdown()">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <a href="#" class="dropdown-item" onclick="showProfile()">
+              <i class="fas fa-user-cog"></i>
+              Hồ sơ cá nhân
+            </a>
+            <a href="#" class="dropdown-item" onclick="showSettings()">
+              <i class="fas fa-cog"></i>
+              Cài đặt
+            </a>
+            <a href="#" class="dropdown-item" onclick="showAIModels()">
+              <i class="fas fa-brain"></i>
+              AI Models
+            </a>
+            <a href="#" class="dropdown-item" onclick="handleLogout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Đăng xuất
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat History Section -->
+    <div class="chat-history-section">
+      <div class="history-header">
+        <h3><i class="fas fa-history"></i> Lịch sử chat</h3>
+        <div class="history-actions">
+          <button class="history-btn search-btn" onclick="toggleHistorySearch()" title="Tìm kiếm">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="history-btn clear-btn" onclick="clearChatHistory()" title="Xóa tất cả">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Search Box -->
+      <div class="history-search" id="historySearch" style="display: none;">
+        <input type="text" id="historySearchInput" placeholder="Tìm kiếm cuộc trò chuyện..." onkeyup="searchChatHistory(this.value)">
+      </div>
+      
+      <div class="chat-history" id="chatHistory">
+        <div class="chat-history-item active" onclick="selectChatHistory(null)">
+          <div class="chat-item-content">
+            <div class="chat-item-icon">
+              <i class="fas fa-message"></i>
+            </div>
+            <div class="chat-item-info">
+              <span class="chat-title">Cuộc trò chuyện hiện tại</span>
+              <span class="chat-preview">Bắt đầu cuộc trò chuyện mới...</span>
+              <span class="chat-time">Bây giờ</span>
+            </div>
+          </div>
+          <div class="chat-item-actions">
+            <button class="chat-action-btn" onclick="event.stopPropagation(); renameChatHistory(null)" title="Đổi tên">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="chat-action-btn" onclick="event.stopPropagation(); deleteChatHistory(null)" title="Xóa">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Chat Container -->
+  <div class="chat-container">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="chat-title">
+        <div class="bot-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="chat-info">
+          <h3 id="chatTitle">Chatbots AI</h3>
+          <p id="chatStatus">Đang hoạt động • Phản hồi nhanh</p>
+        </div>
+      </div>
+      <div class="chat-actions">
+        <!-- AI Model Selector -->
+        <div class="ai-model-selector">
+          <select id="aiModelSelect" class="model-select" onchange="onAIModelChange()" title="Chọn AI Model">
+            <option value="">Đang tải models...</option>
+          </select>
+        </div>
+        
+        <button class="action-btn" title="Cài đặt" onclick="showSettings()">
+          <i class="fas fa-cog"></i>
+        </button>
+        <button class="action-btn" title="Tìm kiếm trong chat">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="action-btn" title="Thêm tùy chọn">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-box" id="chatBox">
+      <div class="message bot">
+        <div class="message-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div>
+          <div class="message-content">
+            Xin chào! Tôi là Chatbots AI của bạn. 🤖✨<br><br>
+            Tôi có thể giúp bạn với:
+            <br>• Trả lời câu hỏi và giải thích
+            <br>• Hỗ trợ lập trình và code
+            <br>• Sáng tạo nội dung và ý tưởng
+            <br>• Phân tích và tư vấn
+            <br><br>Hãy cho tôi biết bạn cần hỗ trợ gì nhé! 😊
+          </div>
+          <div class="message-time">Bây giờ</div>
+        </div>
+      </div>
+      
+      <!-- Typing Indicator -->
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="message-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Input Area -->
+    <div class="input-area">
+      <div class="input-container">
+        <textarea 
+          id="userInput" 
+          placeholder="Nhập tin nhắn của bạn..." 
+          rows="1"
+        ></textarea>
+        <div class="input-actions">
+          <button class="input-btn attachment-btn" title="Đính kèm file">
+            <i class="fas fa-paperclip"></i>
+          </button>
+          <button class="input-btn send-btn" id="sendBtn" onclick="sendMessage()" title="Gửi tin nhắn">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="delete-modal" id="deleteModal">
+    <div class="delete-content">
+      <h3><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa</h3>
+      <p id="deleteMessage">Bạn có chắc chắn muốn xóa không?</p>
+      <div class="delete-actions">
+        <button class="delete-btn delete-cancel" onclick="hideDeleteModal()">
+          <i class="fas fa-times"></i> Hủy
+        </button>
+        <button class="delete-btn delete-confirm" id="confirmDeleteBtn" onclick="confirmDelete()">
+          <i class="fas fa-trash"></i> Xóa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Application State
+    const AppState = {
+      user: null,
+      isLoggedIn: false,
+      currentAIModel: 'gpt-3.5-turbo',
+      chatHistory: [],
+      currentChatId: null,
+      isLoading: false,
+      isHistorySearchVisible: false,
+      isModelDropdownVisible: false
+    };
+
+    // AI Models from list_AI.txt will be loaded dynamically
+    let AI_MODELS = {};
+    
+    // Delete modal state
+    let deleteAction = null;
+    let deleteTarget = null;
+
+    // API Configuration
+    const API_BASE = '../backend/api';
+    
+    // API Functions
+    async function apiRequest(endpoint, options = {}) {
+      const url = `${API_BASE}/${endpoint}`;
+      const defaultOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include' // Include cookies for session
+      };
+
+      try {
+        const response = await fetch(url, { ...defaultOptions, ...options });
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        let data;
+        
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json();
+        } else {
+          // Handle non-JSON responses
+          const text = await response.text();
+          console.error('Non-JSON response:', text);
+          throw new Error('Server returned invalid response');
+        }
+        
+        if (!response.ok) {
+          throw new Error(data.message || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return data;
+      } catch (error) {
+        console.error('API Request Error:', error);
+        throw error;
+      }
+    }
+
+    // Enhanced API request with retry logic
+    async function apiRequestWithRetry(endpoint, options = {}, maxRetries = 3) {
+      let lastError;
+      
+      for (let i = 0; i < maxRetries; i++) {
+        try {
+          return await apiRequest(endpoint, options);
+        } catch (error) {
+          lastError = error;
+          console.warn(`API request attempt ${i + 1} failed:`, error.message);
+          
+          // Don't retry on authentication errors
+          if (error.message.includes('401') || error.message.includes('authentication')) {
+            throw error;
+          }
+          
+          // Wait before retry (exponential backoff)
+          if (i < maxRetries - 1) {
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+          }
+        }
+      }
+      
+      throw lastError;
+    }
+
+    // Authentication Functions
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const errorDiv = document.getElementById('loginError');
+      
+      // Reset error
+      errorDiv.style.display = 'none';
+      
+      // Show loading
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="loading"></span>Đang đăng nhập...';
+      
+      try {
+        const result = await apiRequest('auth.php?action=login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password })
+        });
+        
+        if (result.success) {
+          AppState.user = result.data.user;
+          AppState.isLoggedIn = true;
+          updateUIForLoggedInUser();
+          closeAuth();
+          showSuccessMessage('Đăng nhập thành công!');
+          
+          // Load user data
+          await Promise.all([
+            loadChatHistory(),
+            loadUserAIModel()
+          ]);
+        }
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.style.display = 'block';
+        console.error('Login error:', error);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Đăng Nhập';
+      }
+    }
+
+    async function handleRegister(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      const registerBtn = document.getElementById('registerBtn');
+      const errorDiv = document.getElementById('registerError');
+      const successDiv = document.getElementById('registerSuccess');
+      
+      // Reset messages
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+      
+      // Validate passwords
+      if (password !== confirmPassword) {
+        errorDiv.textContent = 'Mật khẩu xác nhận không khớp';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      
+      // Show loading
+      registerBtn.disabled = true;
+      registerBtn.innerHTML = '<span class="loading"></span>Đang đăng ký...';
+      
+      try {
+        const result = await apiRequest('auth.php?action=register', {
+          method: 'POST',
+          body: JSON.stringify({ name, email, password })
+        });
+        
+        if (result.success) {
+          successDiv.textContent = 'Đăng ký thành công! Vui lòng đăng nhập.';
+          successDiv.style.display = 'block';
+          
+          // Clear form
+          document.getElementById('registerName').value = '';
+          document.getElementById('registerEmail').value = '';
+          document.getElementById('registerPassword').value = '';
+          document.getElementById('confirmPassword').value = '';
+          
+          // Auto switch to login after 2 seconds
+          setTimeout(() => {
+            showLogin();
+          }, 2000);
+        }
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.style.display = 'block';
+        console.error('Register error:', error);
+      } finally {
+        registerBtn.disabled = false;
+        registerBtn.innerHTML = 'Đăng Ký';
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await apiRequest('auth.php?action=logout', { method: 'POST' });
+        
+        // Clear app state
+        AppState.user = null;
+        AppState.isLoggedIn = false;
+        AppState.chatHistory = [];
+        AppState.currentChatId = null;
+        AppState.currentAIModel = 'claude-3-5-sonnet-latest';
+        
+        // Update UI
+        updateUIForGuestUser();
+        startNewChat();
+        showSuccessMessage('Đã đăng xuất thành công!');
+        
+      } catch (error) {
+        console.error('Logout error:', error);
+        showErrorMessage('Lỗi khi đăng xuất');
+      }
+    }
+
+    async function checkAuthStatus() {
+      try {
+        const result = await apiRequest('auth.php?action=status');
+        
+        if (result.success && result.data.authenticated) {
+          AppState.user = result.data.user;
+          AppState.isLoggedIn = true;
+          updateUIForLoggedInUser();
+          
+          // Load user data
+          await Promise.all([
+            loadChatHistory(),
+            loadUserAIModel()
+          ]);
+        } else {
+          updateUIForGuestUser();
+          await loadAIModels(); // Load models for guest users
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        updateUIForGuestUser();
+        await loadAIModels(); // Load models even if auth check fails
+      }
+    }
+
+    // New function to load user's preferred AI model
+    async function loadUserAIModel() {
+      if (!AppState.isLoggedIn) return;
+      
+      try {
+        const result = await apiRequest('ai_models.php?action=current');
+        if (result.success && result.data.current_model) {
+          AppState.currentAIModel = result.data.current_model;
+          
+          const select = document.getElementById('aiModelSelect');
+          if (select) {
+            select.value = AppState.currentAIModel;
+          }
+        }
+      } catch (error) {
+        console.error('Load user AI model error:', error);
+      }
+    }
+
+    // Utility functions
+    function getCurrentTime() {
+      return new Date().toLocaleTimeString('vi-VN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function scrollToBottom() {
+      setTimeout(() => {
+        const chatBox = document.getElementById('chatBox');
+        if (chatBox) {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+      }, 100);
+    }
+
+    function getRandomDelay() {
+      return Math.random() * 2000 + 1000; // 1-3 seconds
+    }
+
+    function isMobile() {
+      return window.innerWidth <= 768;
+    }
+
+    function showSuccessMessage(message) {
+      // Create temporary success notification
+      const notification = document.createElement('div');
+      notification.className = 'success-message';
+      notification.style.position = 'fixed';
+      notification.style.top = '20px';
+      notification.style.right = '20px';
+      notification.style.zIndex = '3000';
+      notification.style.minWidth = '300px';
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // UI Management Functions
+    function updateUIForLoggedInUser() {
+      const guestMode = document.getElementById('guestMode');
+      const userInfo = document.getElementById('userInfo');
+      const userName = document.getElementById('userName');
+      const userEmail = document.getElementById('userEmail');
+      const sidebarSubtitle = document.getElementById('sidebarSubtitle');
+      
+      if (guestMode) guestMode.style.display = 'none';
+      if (userInfo) userInfo.style.display = 'block';
+      
+      if (AppState.user) {
+        if (userName) userName.textContent = AppState.user.name;
+        if (userEmail) userEmail.textContent = AppState.user.email;
+        if (sidebarSubtitle) sidebarSubtitle.textContent = `Xin chào, ${AppState.user.name}!`;
+      }
+    }
+
+    function updateUIForGuestUser() {
+      const guestMode = document.getElementById('guestMode');
+      const userInfo = document.getElementById('userInfo');
+      const sidebarSubtitle = document.getElementById('sidebarSubtitle');
+      
+      if (guestMode) guestMode.style.display = 'block';
+      if (userInfo) userInfo.style.display = 'none';
+      if (sidebarSubtitle) sidebarSubtitle.textContent = 'Your intelligent companion';
+    }
+
+    function showLogin() {
+      const authOverlay = document.getElementById('authOverlay');
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      
+      if (authOverlay && loginForm && registerForm) {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        authOverlay.classList.add('show');
+        
+        // Clear any previous errors
+        const errorDiv = document.getElementById('loginError');
+        if (errorDiv) errorDiv.style.display = 'none';
+        
+        // Focus email input
+        setTimeout(() => {
+          const emailInput = document.getElementById('loginEmail');
+          if (emailInput) emailInput.focus();
+        }, 300);
+      }
+    }
+
+    function showRegister() {
+      const authOverlay = document.getElementById('authOverlay');
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      
+      if (authOverlay && loginForm && registerForm) {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        authOverlay.classList.add('show');
+        
+        // Clear any previous messages
+        const errorDiv = document.getElementById('registerError');
+        const successDiv = document.getElementById('registerSuccess');
+        if (errorDiv) errorDiv.style.display = 'none';
+        if (successDiv) successDiv.style.display = 'none';
+        
+        // Focus name input
+        setTimeout(() => {
+          const nameInput = document.getElementById('registerName');
+          if (nameInput) nameInput.focus();
+        }, 300);
+      }
+    }
+
+    function closeAuth() {
+      const authOverlay = document.getElementById('authOverlay');
+      if (authOverlay) {
+        authOverlay.classList.remove('show');
+      }
+    }
+
+    function toggleUserDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      if (dropdown) {
+        dropdown.classList.toggle('show');
+      }
+    }
+
+    function showProfile() {
+      toggleUserDropdown();
+      alert('Tính năng Hồ sơ cá nhân đang được phát triển!');
+    }
+
+    function showSettings() {
+      toggleUserDropdown();
+      alert('Tính năng Cài đặt đang được phát triển!');
+    }
+
+    function showAIModels() {
+      toggleUserDropdown();
+      window.open('../backend/pages/ai-models.php', '_blank');
+    }
+
+    // UI functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) {
+        sidebar.classList.toggle('open');
+      }
+    }
+
+    function showTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (typingIndicator) {
+        typingIndicator.classList.add('show');
+        scrollToBottom();
+      }
+    }
+
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (typingIndicator) {
+        typingIndicator.classList.remove('show');
+      }
+    }
+
+    function autoResizeTextarea(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    }
+
+    function updateSendButton(inputValue) {
+      const sendBtn = document.getElementById('sendBtn');
+      if (sendBtn) {
+        sendBtn.disabled = !inputValue.trim();
+      }
+    }
+
+    // Chat History Functions
+    async function loadChatHistory() {
+      if (!AppState.isLoggedIn) return;
+      
+      try {
+        const result = await apiRequest('chat.php?action=history');
+        
+        if (result.success) {
+          AppState.chatHistory = result.data.chats || [];
+          updateChatHistoryUI();
+          console.log(`✅ Loaded ${AppState.chatHistory.length} chat sessions`);
+        } else {
+          console.error('Failed to load chat history:', result.message);
+        }
+      } catch (error) {
+        console.error('Load chat history error:', error);
+        showErrorMessage('Lỗi khi tải lịch sử chat');
+      }
+    }
+
+    function updateChatHistoryUI() {
+      const chatHistory = document.getElementById('chatHistory');
+      if (!chatHistory) return;
+      
+      // Clear existing history except current chat
+      const currentChat = chatHistory.querySelector('.chat-history-item.active');
+      chatHistory.innerHTML = '';
+      
+      // Add current chat back
+      if (currentChat) {
+        chatHistory.appendChild(currentChat);
+      }
+      
+      // Add chat history
+      AppState.chatHistory.forEach(chat => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'chat-history-item';
+        historyItem.innerHTML = `
+          <i class="fas fa-message"></i>
+          <span>${escapeHtml(chat.title)}</span>
+        `;
+        historyItem.onclick = () => loadChat(chat.id);
+        chatHistory.appendChild(historyItem);
+      });
+    }
+
+    async function loadChat(chatId) {
+      if (!AppState.isLoggedIn) return;
+      
+      try {
+        const result = await apiRequest(`api/chat.php?id=${chatId}`);
+        if (result.success) {
+          AppState.currentChatId = chatId;
+          const chatBox = document.getElementById('chatBox');
+          const typingIndicator = document.getElementById('typingIndicator');
+          
+          // Clear current messages
+          if (chatBox && typingIndicator) {
+            chatBox.innerHTML = '';
+            chatBox.appendChild(typingIndicator);
+          }
+          
+          // Load messages
+          result.messages.forEach(message => {
+            if (message.role === 'user') {
+              addUserMessage(message.content, false);
+            } else {
+              addBotMessage(message.content, false);
+            }
+          });
+          
+          // Update UI
+          updateChatHistorySelection(chatId);
+        }
+      } catch (error) {
+        console.error('Load chat error:', error);
+      }
+    }
+
+    function updateChatHistorySelection(chatId) {
+      const historyItems = document.querySelectorAll('.chat-history-item');
+      historyItems.forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Find and activate the selected chat
+      const selectedItem = Array.from(historyItems).find(item => 
+        item.onclick && item.onclick.toString().includes(chatId)
+      );
+      if (selectedItem) {
+        selectedItem.classList.add('active');
+      }
+    }
+
+    // Chat functions
+    async function sendMessage() {
+      const userInput = document.getElementById('userInput');
+      if (!userInput) return;
+      
+      const text = userInput.value.trim();
+      if (!text) return;
+      
+      // Add user message
+      addUserMessage(text);
+      
+      // Clear input
+      userInput.value = "";
+      autoResizeTextarea(userInput);
+      updateSendButton('');
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      try {
+        const result = await apiRequestWithRetry('chat.php?action=send', {
+          method: 'POST',
+          body: JSON.stringify({
+            message: text,
+            chatId: AppState.currentChatId,
+            aiModel: AppState.currentAIModel
+          })
+        });
+        
+        hideTypingIndicator();
+        
+        if (result.success) {
+          // Add AI response
+          addBotMessage(result.data.aiResponse.content);
+          
+          // Update chat ID
+          AppState.currentChatId = result.data.chatId;
+          
+          // Refresh chat history for logged in users
+          if (AppState.isLoggedIn) {
+            await loadChatHistory();
+          }
+        } else {
+          addBotMessage('Xin lỗi, có lỗi xảy ra khi xử lý tin nhắn của bạn.');
+        }
+      } catch (error) {
+        hideTypingIndicator();
+        console.error('Send message error:', error);
+        
+        // Check if it's an authentication error
+        if (error.message.includes('401') || error.message.includes('authentication')) {
+          AppState.isLoggedIn = false;
+          updateUIForGuestUser();
+          addBotMessage('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.');
+        } else {
+          addBotMessage('Không thể kết nối đến server. Vui lòng thử lại sau.');
+        }
+      }
+    }
+
+    function addUserMessage(text, scroll = true) {
+      const chatBox = document.getElementById('chatBox');
+      const typingIndicator = document.getElementById('typingIndicator');
+      
+      if (!chatBox || !typingIndicator) return;
+      
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message user";
+      messageDiv.innerHTML = `
+        <div class="message-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div>
+          <div class="message-content">${escapeHtml(text)}</div>
+          <div class="message-time">${getCurrentTime()}</div>
+        </div>
+      `;
+      
+      chatBox.insertBefore(messageDiv, typingIndicator);
+      if (scroll) scrollToBottom();
+    }
+
+    function addBotMessage(text, scroll = true) {
+      const chatBox = document.getElementById('chatBox');
+      const typingIndicator = document.getElementById('typingIndicator');
+      
+      if (!chatBox || !typingIndicator) return;
+      
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message bot";
+      messageDiv.innerHTML = `
+        <div class="message-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div>
+          <div class="message-content">${text}</div>
+          <div class="message-time">${getCurrentTime()}</div>
+        </div>
+      `;
+      
+      chatBox.insertBefore(messageDiv, typingIndicator);
+      if (scroll) scrollToBottom();
+    }
+
+    function generateBotResponse(userMessage) {
+      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+      return randomResponse.replace('{message}', userMessage);
+    }
+
+    async function startNewChat() {
+      const chatBox = document.getElementById('chatBox');
+      const typingIndicator = document.getElementById('typingIndicator');
+      
+      if (!chatBox || !typingIndicator) return;
+      
+      // Reset current chat ID
+      AppState.currentChatId = null;
+      
+      // Clear chat messages
+      chatBox.innerHTML = '';
+      
+      // Add welcome message
+      const welcomeDiv = document.createElement("div");
+      welcomeDiv.className = "message bot";
+      welcomeDiv.innerHTML = `
+        <div class="message-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div>
+          <div class="message-content">
+            Xin chào! Tôi là Chatbots AI của bạn. 🤖✨<br><br>
+            Tôi có thể giúp bạn với:
+            <br>• Trả lời câu hỏi và giải thích
+            <br>• Hỗ trợ lập trình và code
+            <br>• Sáng tạo nội dung và ý tưởng
+            <br>• Phân tích và tư vấn
+            <br><br>Hãy cho tôi biết bạn cần hỗ trợ gì nhé! 😊
+          </div>
+          <div class="message-time">Bây giờ</div>
+        </div>
+      `;
+      
+      chatBox.appendChild(welcomeDiv);
+      chatBox.appendChild(typingIndicator);
+      
+      // Update chat history selection
+      const historyItems = document.querySelectorAll('.chat-history-item');
+      historyItems.forEach(item => item.classList.remove('active'));
+      
+      const currentChat = historyItems[0];
+      if (currentChat) currentChat.classList.add('active');
+      
+      scrollToBottom();
+    }
+
+    function addChatToHistory(title, icon) {
+      const chatHistory = document.getElementById('chatHistory');
+      if (!chatHistory) return;
+      
+      // Remove active class from all items
+      chatHistory.querySelectorAll('.chat-history-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Create new history item
+      const historyItem = document.createElement('div');
+      historyItem.className = 'chat-history-item active';
+      historyItem.innerHTML = `
+        <i class="${icon}"></i>
+        <span>${title}</span>
+      `;
+      
+      // Insert at the beginning
+      chatHistory.insertBefore(historyItem, chatHistory.firstChild);
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', async function() {
+      const userInput = document.getElementById('userInput');
+      const sendBtn = document.getElementById('sendBtn');
+      
+      // Check authentication status
+      await checkAuthStatus();
+      
+      if (userInput) {
+        // Auto-resize textarea and update send button
+        userInput.addEventListener('input', function() {
+          autoResizeTextarea(this);
+          updateSendButton(this.value);
+        });
+        
+        // Enter to send (Shift+Enter for new line)
+        userInput.addEventListener("keydown", function(e) {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
+      }
+      
+      // Initialize send button state
+      if (sendBtn) {
+        sendBtn.disabled = true;
+      }
+      
+      // Close auth overlay when clicking outside
+      const authOverlay = document.getElementById('authOverlay');
+      if (authOverlay) {
+        authOverlay.addEventListener('click', function(e) {
+          if (e.target === authOverlay) {
+            closeAuth();
+          }
+        });
+      }
+      
+      // Setup delete modal event listeners
+      const deleteModal = document.getElementById('deleteModal');
+      const cancelDeleteBtn = document.getElementById('cancelDelete');
+      const confirmDeleteBtn = document.getElementById('confirmDelete');
+      
+      if (deleteModal) {
+        // Close modal when clicking outside
+        deleteModal.addEventListener('click', function(e) {
+          if (e.target === deleteModal) {
+            hideDeleteModal();
+          }
+        });
+        
+        // Handle escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && deleteModal.classList.contains('show')) {
+            hideDeleteModal();
+          }
+        });
+      }
+      
+      if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', hideDeleteModal);
+      }
+      
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', confirmDelete);
+      }
+      
+      // Close user dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        const userMenu = document.querySelector('.user-menu');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userMenu && userDropdown && 
+            !userMenu.contains(e.target)) {
+          userDropdown.classList.remove('show');
+        }
+      });
+      
+      // Click outside sidebar to close on mobile
+      document.addEventListener('click', function(e) {
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        
+        if (isMobile() && 
+            sidebar && menuBtn &&
+            !sidebar.contains(e.target) && 
+            !menuBtn.contains(e.target)) {
+          sidebar.classList.remove('open');
+        }
+      });
+      
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        
+        if (menuBtn) {
+          if (isMobile()) {
+            menuBtn.style.display = 'block';
+          } else {
+            menuBtn.style.display = 'none';
+            if (sidebar) {
+              sidebar.classList.remove('open');
+            }
+          }
+        }
+      });
+      
+      // Initial mobile menu setup
+      const menuBtn = document.querySelector('.mobile-menu-btn');
+      if (menuBtn) {
+        if (isMobile()) {
+          menuBtn.style.display = 'block';
+        } else {
+          menuBtn.style.display = 'none';
+        }
+      }
+      
+      // ESC key to close overlays
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeAuth();
+          const userDropdown = document.getElementById('userDropdown');
+          if (userDropdown) userDropdown.classList.remove('show');
+        }
+      });
+      
+      console.log('🤖 Chatbots AI ChatBot application initialized successfully!');
+      console.log('🔐 Authentication system ready');
+      console.log('💬 Chat system ready');
+      console.log('🧠 AI integration ready');
+      
+      // Load AI models from file
+      await loadAIModels();
+      
+      // Add global test functions for debugging
+      window.testModal = testDeleteModal;
+      window.testAI = function() {
+        const select = document.getElementById('aiModelSelect');
+        console.log('AI Select element:', select);
+        console.log('AI Select display:', select ? getComputedStyle(select).display : 'Not found');
+        console.log('AI Select visibility:', select ? getComputedStyle(select).visibility : 'Not found');
+        console.log('Current AI Model:', AppState.currentAIModel);
+        console.log('Available options:', select ? select.options.length : 0);
+        if (select && select.options.length > 0) {
+          console.log('First few options:', Array.from(select.options).slice(0, 5).map(opt => opt.textContent));
+        }
+      };
+      
+      console.log('💡 Debug commands available:');
+      console.log('   - testModal() để test delete modal');
+      console.log('   - testAI() để kiểm tra AI selector');
+    });
+
+    // Chat History Functions
+    function toggleHistorySearch() {
+      AppState.isHistorySearchVisible = !AppState.isHistorySearchVisible;
+      const searchContainer = document.querySelector('.history-search');
+      
+      if (AppState.isHistorySearchVisible) {
+        searchContainer.style.display = 'block';
+        setTimeout(() => {
+          const searchInput = searchContainer.querySelector('input');
+          searchInput.focus();
+        }, 100);
+      } else {
+        searchContainer.style.display = 'none';
+        searchChatHistory(''); // Reset search
+      }
+      
+      const searchBtn = document.querySelector('.history-btn[onclick="toggleHistorySearch()"]');
+      if (searchBtn) {
+        searchBtn.classList.toggle('active', AppState.isHistorySearchVisible);
+      }
+    }
+
+    function searchChatHistory(query) {
+      const items = document.querySelectorAll('.chat-history-item');
+      const searchQuery = query?.toLowerCase().trim() || '';
+      
+      items.forEach(item => {
+        const title = item.querySelector('.chat-title')?.textContent?.toLowerCase() || '';
+        const preview = item.querySelector('.chat-preview')?.textContent?.toLowerCase() || '';
+        
+        if (searchQuery === '' || title.includes(searchQuery) || preview.includes(searchQuery)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+    
+    function selectChatHistory(chatId) {
+      // Remove active from all items
+      document.querySelectorAll('.chat-history-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Add active to clicked item
+      event.target.closest('.chat-history-item').classList.add('active');
+      
+      if (chatId) {
+        loadChatSession(chatId);
+      } else {
+        // Current chat selected - start new chat
+        startNewChat();
+      }
+    }
+    
+    function renameChatHistory(chatId) {
+      if (!chatId) {
+        // Renaming current chat
+        const newTitle = prompt('Nhập tên cho cuộc trò chuyện hiện tại:', 'Cuộc trò chuyện mới');
+        if (newTitle && newTitle.trim()) {
+          const titleElement = document.querySelector('.chat-history-item.active .chat-title');
+          if (titleElement) {
+            titleElement.textContent = newTitle.trim();
+          }
+          showSuccessMessage('Đã đổi tên cuộc trò chuyện!');
+        }
+      } else {
+        // Renaming existing chat
+        renameChatSession(chatId, event);
+      }
+    }
+    
+    function deleteChatHistory(chatId) {
+      if (!chatId) {
+        // Deleting current chat
+        showDeleteModal(
+          'Bạn có chắc chắn muốn xóa cuộc trò chuyện hiện tại?',
+          () => {
+            startNewChat();
+            showSuccessMessage('Đã xóa cuộc trò chuyện hiện tại!');
+          }
+        );
+      } else {
+        // Deleting existing chat
+        deleteChatSession(chatId, event);
+      }
+    }
+
+
+
+    function loadChatSession(chatId) {
+      document.querySelectorAll('.chat-history-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      const clickedItem = document.querySelector(`[data-chat-id="${chatId}"]`);
+      if (clickedItem) {
+        clickedItem.classList.add('active');
+      }
+      
+      AppState.currentChatId = chatId;
+      loadChatMessages(chatId);
+    }
+
+    async function loadChatMessages(chatId) {
+      try {
+        AppState.isLoading = true;
+        updateSendButton();
+        
+        const response = await apiRequest(`api/chat-messages.php?chat_id=${chatId}`);
+        
+        const chatContainer = document.getElementById('chatMessages');
+        if (chatContainer) {
+          chatContainer.innerHTML = '';
+          
+          response.messages?.forEach(message => {
+            addMessageToChat(message.content, message.is_user ? 'user' : 'bot', false);
+          });
+        }
+        
+        AppState.isLoading = false;
+        updateSendButton();
+        
+      } catch (error) {
+        console.error('Error loading chat messages:', error);
+        AppState.isLoading = false;
+        updateSendButton();
+      }
+    }
+
+    function renameChatSession(chatId, event) {
+      event?.stopPropagation();
+      
+      const chatItem = document.querySelector(`[data-chat-id="${chatId}"]`);
+      const titleElement = chatItem?.querySelector('.chat-title');
+      if (!titleElement) return;
+      
+      const currentTitle = titleElement.textContent;
+      const newTitle = prompt('Nhập tên mới cho cuộc trò chuyện:', currentTitle);
+      
+      if (newTitle && newTitle.trim() && newTitle !== currentTitle) {
+        titleElement.textContent = newTitle.trim();
+        
+        const chatIndex = AppState.chatHistory.findIndex(chat => chat.id === chatId);
+        if (chatIndex !== -1) {
+          AppState.chatHistory[chatIndex].title = newTitle.trim();
+        }
+        
+        updateChatTitleOnServer(chatId, newTitle.trim());
+      }
+    }
+
+    async function updateChatTitleOnServer(chatId, newTitle) {
+      try {
+        await apiRequest('api/update-chat-title.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: chatId, title: newTitle })
+        });
+      } catch (error) {
+        console.error('Error updating chat title:', error);
+      }
+    }
+
+
+
+
+
+    function updateChatHistoryUI() {
+      const historyContainer = document.querySelector('.chat-history-list');
+      if (!historyContainer) return;
+      
+      historyContainer.innerHTML = '';
+      
+      AppState.chatHistory.forEach(chat => {
+        const chatItem = createChatHistoryItem(chat);
+        historyContainer.appendChild(chatItem);
+      });
+    }
+
+    function createChatHistoryItem(chat) {
+      const item = document.createElement('div');
+      item.className = 'chat-history-item';
+      item.setAttribute('data-chat-id', chat.id);
+      item.onclick = () => loadChatSession(chat.id);
+      
+      item.innerHTML = `
+        <div class="chat-item-content">
+          <div class="chat-item-icon">
+            <i class="fas fa-comment"></i>
+          </div>
+          <div class="chat-item-info">
+            <span class="chat-title">${chat.title || 'Cuộc trò chuyện mới'}</span>
+            <span class="chat-preview">${chat.preview || 'Chưa có tin nhắn'}</span>
+            <span class="chat-time">${formatTimeAgo(chat.updated_at)}</span>
+          </div>
+          <div class="chat-item-actions">
+            <button class="chat-action-btn" onclick="renameChatSession('${chat.id}', event)" title="Đổi tên">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="chat-action-btn" onclick="deleteChatSession('${chat.id}', event)" title="Xóa">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+      
+      return item;
+    }
+
+    function formatTimeAgo(timestamp) {
+      if (!timestamp) return 'Vừa xong';
+      
+      const now = new Date();
+      const time = new Date(timestamp);
+      const diffMs = now - time;
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffHours / 24);
+      
+      if (diffDays > 0) {
+        return `${diffDays} ngày trước`;
+      } else if (diffHours > 0) {
+        return `${diffHours} giờ trước`;
+      } else {
+        return 'Vừa xong';
+      }
+    }
+
+    // Load AI Models from PHP API
+    async function loadAIModels() {
+      const select = document.getElementById('aiModelSelect');
+      
+      try {
+        console.log('🔄 Loading AI models from API...');
+        const result = await apiRequest('ai_models.php?action=list');
+        
+        if (!result.success) {
+          throw new Error(result.message || 'Failed to load models');
+        }
+        
+        const groupedModels = result.data.grouped;
+        
+        // Clear and populate select
+        select.innerHTML = '<option value="">-- Chọn AI Model --</option>';
+        
+        // Add grouped options
+        Object.entries(groupedModels).forEach(([group, models]) => {
+          if (models.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = group;
+            
+            models.forEach(model => {
+              const option = document.createElement('option');
+              option.value = model.id;
+              option.textContent = model.name;
+              option.title = model.description;
+              optgroup.appendChild(option);
+            });
+            
+            select.appendChild(optgroup);
+          }
+        });
+        
+        // Set default model
+        if (groupedModels.Claude && groupedModels.Claude.length > 0) {
+          AppState.currentAIModel = groupedModels.Claude[0].id;
+        } else if (result.data.models.length > 0) {
+          AppState.currentAIModel = result.data.models[0].id;
+        }
+        
+        select.value = AppState.currentAIModel;
+        console.log(`🎯 Default model selected: ${AppState.currentAIModel}`);
+        console.log(`✅ Successfully loaded ${result.data.total} AI models`);
+        
+      } catch (error) {
+        console.error('❌ Error loading AI models:', error);
+        
+        // Fallback options with popular models
+        select.innerHTML = `
+          <option value="">-- Chọn AI Model --</option>
+          <optgroup label="Claude">
+            <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (Latest)</option>
+            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Oct 2024)</option>
+            <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+          </optgroup>
+          <optgroup label="GPT">
+            <option value="gpt-4">GPT-4</option>
+            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="gemini-pro">Gemini Pro</option>
+          </optgroup>
+        `;
+        
+        AppState.currentAIModel = 'claude-3-5-sonnet-latest';
+        select.value = AppState.currentAIModel;
+        
+        console.log('🔄 Fallback models loaded');
+      }
+      
+      // Ensure select is visible
+      select.style.display = 'block';
+      select.style.visibility = 'visible';
+    }
+    
+    function formatModelName(modelId) {
+      // Format model name for display
+      return modelId
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase())
+        .replace(/^(Claude|Gpt|Mj)/, (match) => {
+          const formats = {
+            'Claude': 'Claude',
+            'Gpt': 'GPT',
+            'Mj': 'Midjourney'
+          };
+          return formats[match] || match;
+        });
+    }
+    
+    async function onAIModelChange() {
+      const select = document.getElementById('aiModelSelect');
+      const selectedModel = select.value;
+      
+      if (!selectedModel) return;
+      
+      try {
+        // Update on server for logged in users
+        if (AppState.isLoggedIn) {
+          await apiRequest('ai_models.php?action=select', {
+            method: 'POST',
+            body: JSON.stringify({ model_id: selectedModel })
+          });
+        }
+        
+        // Update local state
+        AppState.currentAIModel = selectedModel;
+        
+        const modelName = select.options[select.selectedIndex].textContent;
+        showSuccessMessage(`Đã chọn model: ${modelName}`);
+        console.log('Selected AI Model:', AppState.currentAIModel);
+        
+      } catch (error) {
+        console.error('Error selecting AI model:', error);
+        showErrorMessage('Lỗi khi chọn AI model');
+      }
+    }
+    
+    // Delete Confirmation Modal Functions
+    function showDeleteModal(message, action, target = null) {
+      const modal = document.getElementById('deleteModal');
+      const messageElement = document.getElementById('deleteMessage');
+      
+      if (!modal) {
+        console.error('Delete modal not found');
+        return;
+      }
+      
+      if (!messageElement) {
+        console.error('Delete message element not found');
+        return;
+      }
+      
+      messageElement.textContent = message;
+      deleteAction = action;
+      deleteTarget = target;
+      
+      // Ensure modal is visible
+      modal.style.display = 'flex';
+      modal.style.visibility = 'visible';
+      modal.style.opacity = '1';
+      modal.classList.add('show');
+      
+      // Add body class to prevent scrolling
+      document.body.style.overflow = 'hidden';
+      
+      console.log('✅ Delete modal shown with message:', message);
+    }
+    
+    function hideDeleteModal() {
+      const modal = document.getElementById('deleteModal');
+      
+      if (modal) {
+        modal.classList.remove('show');
+        
+        // Delay hiding to allow animation
+        setTimeout(() => {
+          modal.style.display = 'none';
+          modal.style.visibility = 'hidden';
+          modal.style.opacity = '0';
+        }, 300);
+      }
+      
+      // Restore body scrolling
+      document.body.style.overflow = '';
+      
+      deleteAction = null;
+      deleteTarget = null;
+      
+      console.log('✅ Delete modal hidden');
+    }
+    
+    function confirmDelete() {
+      if (deleteAction) {
+        deleteAction(deleteTarget);
+      }
+      hideDeleteModal();
+    }
+    
+    // Test function for modal
+    function testDeleteModal() {
+      showDeleteModal(
+        'Đây là modal test - bạn có muốn tiếp tục?',
+        function() {
+          console.log('Test modal confirmed!');
+          alert('Test modal đã hoạt động!');
+        }
+      );
+    }
+    
+    // Enhanced Clear Chat History
+    function clearChatHistory() {
+      showDeleteModal(
+        'Bạn có chắc chắn muốn xóa toàn bộ lịch sử chat? Hành động này không thể hoàn tác.',
+        clearChatHistoryConfirmed
+      );
+    }
+    
+    async function clearChatHistoryConfirmed() {
+      try {
+        const result = await apiRequest('chat.php?action=clear', {
+          method: 'POST'
+        });
+        
+        if (!result.success) {
+          throw new Error(result.message || 'Failed to clear chat history');
+        }
+        
+        // Clear from state and UI
+        AppState.chatHistory = [];
+        updateChatHistoryUI();
+        
+        // Clear current chat
+        AppState.currentChatId = null;
+        const chatBox = document.getElementById('chatBox');
+        const typingIndicator = document.getElementById('typingIndicator');
+        
+        if (chatBox && typingIndicator) {
+          chatBox.innerHTML = '';
+          chatBox.appendChild(typingIndicator);
+          
+          // Add welcome message back
+          const welcomeDiv = document.createElement("div");
+          welcomeDiv.className = "message bot";
+          welcomeDiv.innerHTML = `
+            <div class="message-avatar">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div>
+              <div class="message-content">
+                Xin chào! Tôi là Chatbots AI của bạn. 🤖✨<br><br>
+                Tôi có thể giúp bạn với:
+                <br>• Trả lời câu hỏi và giải thích
+                <br>• Hỗ trợ lập trình và code
+                <br>• Sáng tạo nội dung và ý tưởng
+                <br>• Phân tích và tư vấn
+                <br><br>Hãy cho tôi biết bạn cần hỗ trợ gì nhé! 😊
+              </div>
+              <div class="message-time">Bây giờ</div>
+            </div>
+          `;
+          
+          chatBox.insertBefore(welcomeDiv, typingIndicator);
+        }
+        
+        showSuccessMessage('Đã xóa toàn bộ lịch sử chat thành công!');
+      } catch (error) {
+        console.error('Error clearing chat history:', error);
+        showErrorMessage('Lỗi khi xóa lịch sử chat!');
+      }
+    }
+    
+    function showErrorMessage(message) {
+      const notification = document.createElement('div');
+      notification.className = 'error-message';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 3000;
+        min-width: 300px;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-weight: 500;
+        animation: slideInRight 0.3s ease;
+      `;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // Enhanced delete individual chat
+    function deleteChatSession(chatId, event) {
+      event?.stopPropagation();
+      
+      showDeleteModal(
+        'Bạn có chắc chắn muốn xóa cuộc trò chuyện này?',
+        deleteChatSessionConfirmed,
+        chatId
+      );
+    }
+    
+    async function deleteChatSessionConfirmed(chatId) {
+      try {
+        // Remove from UI
+        const chatItem = document.querySelector(`[data-chat-id="${chatId}"]`);
+        chatItem?.remove();
+        
+        // Remove from state
+        AppState.chatHistory = AppState.chatHistory.filter(chat => chat.id !== chatId);
+        
+        // If this was the current chat, clear the chat area
+        if (AppState.currentChatId === chatId) {
+          AppState.currentChatId = null;
+          const chatContainer = document.getElementById('chatMessages');
+          if (chatContainer) chatContainer.innerHTML = '';
+        }
+        
+        // Call API to delete from server
+        if (AppState.isLoggedIn) {
+          await apiRequest('api/delete-chat.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId })
+          });
+        }
+        
+        showSuccessMessage('Đã xóa cuộc trò chuyện thành công!');
+      } catch (error) {
+        console.error('Error deleting chat:', error);
+        showErrorMessage('Lỗi khi xóa cuộc trò chuyện!');
+      }
+    }
+    
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('deleteModal');
+      const modalContent = document.querySelector('.delete-content');
+      
+      if (modal && modal.classList.contains('show') && 
+          !modalContent.contains(event.target)) {
+        hideDeleteModal();
+      }
+    });
+    
+    // ESC key to close modal
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        hideDeleteModal();
+      }
+    });
+  </script>
+</body>
+</html>
