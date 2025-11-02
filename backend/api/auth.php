@@ -25,10 +25,10 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 switch ($action) {
     case 'login':
-        handleLogin();
+         handleLogin($users);
         break;
     case 'register':
-        handleRegister();
+        handleRegister($users);
         break;
     case 'logout':
         handleLogout();
@@ -38,6 +38,9 @@ switch ($action) {
         break;
     case 'refresh':
         refreshSession();
+        break;
+    case 'showUsers':
+        showAllUsers($users);
         break;
     default:
         sendResponse(false, 'Invalid action', 400);
@@ -113,66 +116,110 @@ function handleLogin() {
     }
 }
 
-function handleRegister() {
+// function handleRegister() {
+//     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+//         sendResponse(false, 'Method not allowed', 405);
+//         return;
+//     }
+    
+//     $input = json_decode(file_get_contents('php://input'), true);
+//     $name = sanitizeInput($input['name'] ?? '');
+//     $email = sanitizeInput($input['email'] ?? '');
+//     $password = $input['password'] ?? '';
+    
+//     // Validation
+//     if (empty($name) || empty($email) || empty($password)) {
+//         sendResponse(false, 'Tất cả các trường đều bắt buộc', 400);
+//         return;
+//     }
+    
+//     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+//         sendResponse(false, 'Email không hợp lệ', 400);
+//         return;
+//     }
+    
+//     if (strlen($password) < 6) {
+//         sendResponse(false, 'Mật khẩu phải có ít nhất 6 ký tự', 400);
+//         return;
+//     }
+    
+//     try {
+//         $db = new Database();
+//         $conn = $db->getConnection();
+        
+//         // Check if email already exists
+//         $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+//         $stmt->execute([$email]);
+//         if ($stmt->fetch()) {
+//             sendResponse(false, 'Email đã được sử dụng', 409);
+//             return;
+//         }
+        
+//         // Hash password
+//         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+//         // Insert new user
+//         $stmt = $conn->prepare("INSERT INTO users (name, email, password, status, created_at) VALUES (?, ?, ?, 'active', NOW())");
+//         $result = $stmt->execute([$name, $email, $hashedPassword]);
+        
+//         if ($result) {
+//             $userId = $conn->lastInsertId();
+//             sendResponse(true, 'Đăng ký thành công', 201, [
+//                 'user_id' => $userId,
+//                 'redirect' => 'login'
+//             ]);
+//         } else {
+//             sendResponse(false, 'Không thể tạo tài khoản', 500);
+//         }
+        
+//     } catch (Exception $e) {
+//         error_log("Register error: " . $e->getMessage());
+//         sendResponse(false, 'Lỗi hệ thống, vui lòng thử lại sau', 500);
+//     }
+// }
+
+// API handleRegister()
+function handleRegister(&$users) {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         sendResponse(false, 'Method not allowed', 405);
-        return;
     }
-    
+
     $input = json_decode(file_get_contents('php://input'), true);
     $name = sanitizeInput($input['name'] ?? '');
     $email = sanitizeInput($input['email'] ?? '');
     $password = $input['password'] ?? '';
-    
-    // Validation
+
     if (empty($name) || empty($email) || empty($password)) {
         sendResponse(false, 'Tất cả các trường đều bắt buộc', 400);
-        return;
     }
-    
+
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         sendResponse(false, 'Email không hợp lệ', 400);
-        return;
     }
-    
+
     if (strlen($password) < 6) {
         sendResponse(false, 'Mật khẩu phải có ít nhất 6 ký tự', 400);
-        return;
     }
-    
-    try {
-        $db = new Database();
-        $conn = $db->getConnection();
-        
-        // Check if email already exists
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        if ($stmt->fetch()) {
+
+    foreach ($users as $u) {
+        if ($u['email'] === $email) {
             sendResponse(false, 'Email đã được sử dụng', 409);
-            return;
         }
-        
-        // Hash password
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        
-        // Insert new user
-        $stmt = $conn->prepare("INSERT INTO users (name, email, password, status, created_at) VALUES (?, ?, ?, 'active', NOW())");
-        $result = $stmt->execute([$name, $email, $hashedPassword]);
-        
-        if ($result) {
-            $userId = $conn->lastInsertId();
-            sendResponse(true, 'Đăng ký thành công', 201, [
-                'user_id' => $userId,
-                'redirect' => 'login'
-            ]);
-        } else {
-            sendResponse(false, 'Không thể tạo tài khoản', 500);
-        }
-        
-    } catch (Exception $e) {
-        error_log("Register error: " . $e->getMessage());
-        sendResponse(false, 'Lỗi hệ thống, vui lòng thử lại sau', 500);
     }
+
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $newUser = [
+        'id' => count($users) + 1,
+        'name' => $name,
+        'email' => $email,
+        'password' => $hashedPassword,
+        'status' => 'active',
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    $users[] = $newUser;
+
+    saveUsers($users);
+    sendResponse(true, 'Đăng ký thành công', 201, $newUser);
 }
 
 function handleLogout() {
@@ -234,18 +281,59 @@ function refreshSession() {
 }
 
 // Utility functions
-function sendResponse($success, $message, $code = 200, $data = []) {
-    http_response_code($code);
+// function sendResponse($success, $message, $code = 200, $data = []) {
+//     http_response_code($code);
+//     echo json_encode([
+//         'success' => $success,
+//         'message' => $message,
+//         'data' => $data,
+//         'timestamp' => date('Y-m-d H:i:s')
+//     ]);
+//     exit();
+// }
+
+function sendResponse($success, $message, $status = 200, $data = null) {
+    http_response_code($status);
     echo json_encode([
         'success' => $success,
         'message' => $message,
-        'data' => $data,
-        'timestamp' => date('Y-m-d H:i:s')
+        'data' => $data
     ]);
-    exit();
+    exit;
 }
 
+// function sanitizeInput($input) {
+//     return htmlspecialchars(strip_tags(trim($input)));
+// }
+
+// Hàm làm sạch input
 function sanitizeInput($input) {
     return htmlspecialchars(strip_tags(trim($input)));
 }
+
+function showAllUsers($users) {
+    // Ẩn mật khẩu trước khi in ra
+    $safeUsers = array_map(function($u) {
+        $u['password'] = '[HIDDEN]';
+        return $u;
+    }, $users);
+
+    sendResponse(true, 'Danh sách user hiện tại', 200, $safeUsers);
+}
+
+function loadUsers() {
+    $file = __DIR__ . '/users.json';
+    if (!file_exists($file)) {
+        return [];
+    }
+    $json = file_get_contents($file);
+    return json_decode($json, true) ?? [];
+}
+
+function saveUsers($users) {
+    $file = __DIR__ . '/users.json';
+    file_put_contents($file, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+
 ?>

@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Admin",
+        "email": "admin@gmail.com",
+        "password": "$2y$10$zAs1o9A25mdlm3qDcxlz3uHj07VTX5.aZ4dWFlU4ICmh4j5OwU2xK",
+        "status": "active",
+        "created_at": "2025-10-30 17:33:06"
+    },
+    {
+        "id": 2,
+        "name": "Quyen",
+        "email": "quyen@gmail.com",
+        "password": "$2y$10$Ec7HbTZjW9IoXkJXQu.xZOg6WlZ0L56WMbtqMo8FXdYJ9TlIFkJny",
+        "status": "active",
+        "created_at": "2025-10-30 17:33:10"
+    },
+    {
+        "id": 3,
+        "name": "Hoa",
+        "email": "hoa@gmail.com",
+        "password": "$2y$10$6Lm9SySrFfhEKMC\/pKTZUuwEudFyYqhpAQkB6GeBroEaiATOhVqU.",
+        "status": "active",
+        "created_at": "2025-11-02 03:57:32"
+    }
+]
