@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Thư Viện AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-brand">
+                <span>🧠</span>
+                <span>Thư Viện AI</span>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="index.html">Chat</a></li>
+                <li><a href="document-manager.html">Tài liệu</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="user-profile" id="userProfile">
+                <div class="user-avatar">👤</div>
+                <span id="userName">Loading...</span>
+            </div>
+        </nav>
+        <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    </header>
+
+    <!-- Floating Particles Background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main Screen -->
+    <main>
+        <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <p class="dashboard-subtitle">Chào mừng quay trở lại! Theo dõi hoạt động AI của bạn</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card slide-in">
+                <span class="stat-icon">💬</span>
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">Cuộc trò chuyện</div>
+                <span class="stat-change">+12% tháng này</span>
+            </div>
+            <div class="stat-card slide-in">
+                <span class="stat-icon">🤖</span>
+                <div class="stat-number">43</div>
+                <div class="stat-label">AI Models đã sử dụng</div>
+                <span class="stat-change">+5 models mới</span>
+            </div>
+            <div class="stat-card slide-in">
+                <span class="stat-icon">⚡</span>
+                <div class="stat-number">847</div>
+                <div class="stat-label">Credits còn lại</div>
+                <span class="stat-change">Premium Active</span>
+            </div>
+            <div class="stat-card slide-in">
+                <span class="stat-icon">📄</span>
+                <div class="stat-number">156</div>
+                <div class="stat-label">Tài liệu đã xử lý</div>
+                <span class="stat-change">+23 docs tháng này</span>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Recent Activity -->
+            <div class="activity-card slide-in">
+                <h2 class="card-title">
+                    <span>📈</span>
+                    Hoạt động gần đây
+                </h2>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-icon">💬</div>
+                        <div class="activity-content">
+                            <h4>Chat với GPT-4</h4>
+                            <p>Thảo luận về machine learning algorithms</p>
+                        </div>
+                        <span class="activity-time">2 phút trước</span>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">📝</div>
+                        <div class="activity-content">
+                            <h4>Tạo nội dung với Claude</h4>
+                            <p>Viết blog về AI trends 2024</p>
+                        </div>
+                        <span class="activity-time">15 phút trước</span>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">🎨</div>
+                        <div class="activity-content">
+                            <h4>Tạo ảnh với DALL-E</h4>
+                            <p>Generate 5 marketing images</p>
+                        </div>
+                        <span class="activity-time">1 giờ trước</span>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">📊</div>
+                        <div class="activity-content">
+                            <h4>Phân tích dữ liệu</h4>
+                            <p>Upload và xử lý dataset mới</p>
+                        </div>
+                        <span class="activity-time">3 giờ trước</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="activity-card slide-in">
+                <h2 class="card-title">
+                    <span>⚡</span>
+                    Thao tác nhanh
+                </h2>
+                <div class="quick-actions">
+                    <a href="index.html" class="action-btn">
+                        <span class="action-icon">💬</span>
+                        <div class="action-text">
+                            <h4>Chat mới</h4>
+                            <p>Bắt đầu cuộc trò chuyện</p>
+                        </div>
+                    </a>
+                    <a href="document-manager.html" class="action-btn">
+                        <span class="action-icon">📄</span>
+                        <div class="action-text">
+                            <h4>Upload tài liệu</h4>
+                            <p>Thêm file để phân tích</p>
+                        </div>
+                    </a>
+                    <a href="pricing.html" class="action-btn">
+                        <span class="action-icon">⭐</span>
+                        <div class="action-text">
+                            <h4>Nâng cấp Plan</h4>
+                            <p>Unlock thêm tính năng</p>
+                        </div>
+                    </a>
+                    <a href="#" class="action-btn">
+                        <span class="action-icon">📊</span>
+                        <div class="action-text">
+                            <h4>Báo cáo chi tiết</h4>
+                            <p>Xem thống kê đầy đủ</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Usage Chart -->
+        <div class="chart-container slide-in">
+            <h2 class="card-title">
+                <span>🤖</span>
+                Mô hình AI được sử dụng nhiều nhất
+            </h2>
+            <div class="usage-bars">
+                <div class="usage-item">
+                    <span class="model-name">GPT-4</span>
+                    <div class="usage-bar">
+                        <div class="usage-fill" style="width: 85%;"></div>
+                    </div>
+                    <span class="usage-percentage">85%</span>
+                </div>
+                <div class="usage-item">
+                    <span class="model-name">Claude-3</span>
+                    <div class="usage-bar">
+                        <div class="usage-fill" style="width: 72%;"></div>
+                    </div>
+                    <span class="usage-percentage">72%</span>
+                </div>
+                <div class="usage-item">
+                    <span class="model-name">Gemini Pro</span>
+                    <div class="usage-bar">
+                        <div class="usage-fill" style="width: 68%;"></div>
+                    </div>
+                    <span class="usage-percentage">68%</span>
+                </div>
+                <div class="usage-item">
+                    <span class="model-name">DALL-E 3</span>
+                    <div class="usage-bar">
+                        <div class="usage-fill" style="width: 45%;"></div>
+                    </div>
+                    <span class="usage-percentage">45%</span>
+                </div>
+                <div class="usage-item">
+                    <span class="model-name">Llama 2</span>
+                    <div class="usage-bar">
+                        <div class="usage-fill" style="width: 32%;"></div>
+                    </div>
+                    <span class="usage-percentage">32%</span>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <script>
+        // Create floating particles with performance optimization
+        function createParticles() {
+            const particleContainer = document.getElementById('particles');
+            if (!particleContainer) return;
+            
+            // Reduce particles on mobile for performance
+            const isMobile = window.innerWidth <= 768;
+            const particleCount = isMobile ? 25 : 50;
+
+            // Clear existing particles
+            particleContainer.innerHTML = '';
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // Random size
+                const size = Math.random() * 6 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Random animation delay and duration
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 8) + 's';
+                
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        // Counter animation for stat numbers with error handling
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                try {
+                    const text = counter.textContent.replace(/,/g, '');
+                    const target = parseInt(text);
+                    
+                    if (isNaN(target)) return;
+                    
+                    const increment = target / 100;
+                    let current = 0;
+                    
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            counter.textContent = target.toLocaleString();
+                            clearInterval(timer);
+                        } else {
+                            counter.textContent = Math.floor(current).toLocaleString();
+                        }
+                    }, 20);
+                } catch (error) {
+                    console.warn('Error animating counter:', error);
+                }
+            });
+        }
+
+        // Add slide-in animation on scroll with performance optimization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create particles
+            createParticles();
+            
+            // Recreate particles on resize for responsive adjustment
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    createParticles();
+                }, 250);
+            });
+            
+            const slideInElements = document.querySelectorAll('.slide-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px 0px 0px'
+            });
+
+            slideInElements.forEach(el => {
+                observer.observe(el);
+            });
+
+            // Animate counters after a delay
+            setTimeout(() => {
+                animateCounters();
+            }, 500);
+
+            // Animate usage bars with improved timing
+            setTimeout(() => {
+                const usageFills = document.querySelectorAll('.usage-fill');
+                usageFills.forEach((fill, index) => {
+                    const width = fill.style.width;
+                    fill.style.width = '0%';
+                    setTimeout(() => {
+                        fill.style.width = width;
+                    }, 300 + (index * 200));
+                });
+            }, 1200);
+
+            // Add tooltip functionality for usage bars
+            const usageItems = document.querySelectorAll('.usage-item');
+            usageItems.forEach(item => {
+                try {
+                    const modelName = item.querySelector('.model-name')?.textContent || '';
+                    const percentage = item.querySelector('.usage-percentage')?.textContent || '';
+                    
+                    if (modelName && percentage) {
+                        item.title = `${modelName}: ${percentage} usage this month`;
+                        
+                        item.addEventListener('mouseenter', function() {
+                            this.style.transform = 'translateX(8px) scale(1.02)';
+                        });
+                        
+                        item.addEventListener('mouseleave', function() {
+                            this.style.transform = 'translateX(0) scale(1)';
+                        });
+                    }
+                } catch (error) {
+                    console.warn('Error setting up usage item tooltip:', error);
+                }
+            });
+        });
+
+        // Load user information
+        function loadUserInfo() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const token = localStorage.getItem('token');
+                
+                if (user && user.username) {
+                    document.getElementById('userName').textContent = user.username;
+                    
+                    // Update page title with user name
+                    document.title = `Dashboard - ${user.username} - Thư Viện AI`;
+                    
+                    // Add user role if available
+                    if (user.role) {
+                        const userProfile = document.getElementById('userProfile');
+                        userProfile.title = `Role: ${user.role}`;
+                    }
+                    
+                    console.log('User loaded:', user);
+                } else {
+                    // No user data, redirect to login
+                    console.warn('No user data found, redirecting to login');
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Check authentication on page load
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn('No token found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+            loadUserInfo();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        document.addEventListener('mousedown', function() {
+            document.body.classList.remove('keyboard-navigation');
+        });
+    </script>
+    
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            
+            function toggleMobileMenu() {
+                if (mobileMenuToggle && navMenu && mobileMenuOverlay) {
+                    const isActive = navMenu.classList.contains('mobile-active');
+                    
+                    if (isActive) {
+                        navMenu.classList.remove('mobile-active');
+                        mobileMenuToggle.classList.remove('active');
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else {
+                        navMenu.classList.add('mobile-active');
+                        mobileMenuToggle.classList.add('active');
+                        mobileMenuOverlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                }
+            }
+            
+            function closeMobileMenu() {
+                if (navMenu && mobileMenuToggle && mobileMenuOverlay) {
+                    navMenu.classList.remove('mobile-active');
+                    mobileMenuToggle.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+            }
+            
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Close menu when clicking on a link
+            if (navMenu) {
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', closeMobileMenu);
+                });
+            }
+            
+            // Close menu on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && navMenu && navMenu.classList.contains('mobile-active')) {
+                    closeMobileMenu();
+                }
+            });
+            
+            // Close menu on window resize if desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

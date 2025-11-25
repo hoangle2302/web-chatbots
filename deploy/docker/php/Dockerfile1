@@ -1,0 +1,26 @@
+# Base image
+FROM php:8.2-fpm
+
+# Install required PHP extensions
+RUN apt-get update && apt-get install -y \
+    zip unzip git curl libzip-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring zip xml \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Copy source code relative to build context
+COPY src/php-backend/ /var/www/html/
+
+# Set permissions (important if mounting volume from host)
+RUN chown -R www-data:www-data /var/www/html
+
+# Install composer dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+EXPOSE 8000
+
+CMD ["php-fpm"]

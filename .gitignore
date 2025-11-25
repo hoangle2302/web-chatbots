@@ -1,0 +1,66 @@
+# ============================================
+# GITIGNORE - THƯ VIỆN AI
+# ============================================
+
+# Config files với sensitive data
+config.env
+*.env
+.env
+src/php-backend/config.env
+src/php-backend/.env
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Uploads (tùy chọn - có thể giữ folder nhưng ignore files)
+src/data/uploads/*
+!src/data/uploads/.gitkeep
+deploy/data/uploads/*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+data/database/*.db
+
+# Dependencies
+node_modules/
+vendor/
+composer.lock
+
+# IDE và editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# Docker volumes
+mysql-data/
+php-docDb/
+
+# Build files
+dist/
+build/
+*.min.js.map
+

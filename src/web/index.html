@@ -1,0 +1,2521 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư Viện AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Mobile Sidebar Toggle Button -->
+    <button class="sidebar-mobile-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+        ☰
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    
+    <!-- Sidebar chọn model -->
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-mobile-close" id="sidebar-close" aria-label="Close sidebar">
+            ✕
+        </button>
+        <div class="sidebar-header">
+            <h2>
+                <span>🧠</span><span> </span>
+                <span>T</span><span>h</span><span>ư</span><span> </span>
+                <span>V</span><span>i</span><span>ệ</span><span>n</span><span> </span>
+                <span>A</span><span>I</span>
+            </h2>
+            <div class="user-section" id="user-section" style="display: none;">
+                <div class="user-info">
+                    <span id="user-name">User</span>
+                    <span id="user-credits" class="credits">0 credits</span>
+                </div>
+                <div class="user-actions">
+                    <a href="dashboard.html" class="btn-dashboard">Dashboard</a>
+                    <a href="pricing.html" class="btn-pricing">Nạp credits</a>
+                    <button onclick="logout()" class="btn-logout">Đăng xuất</button>
+                </div>
+            </div>
+            <div class="auth-section" id="auth-section">
+                <a href="login.html" class="btn-login" style="margin-right: 20px;">Đăng nhập</a>
+                <a href="register.html" class="btn-register">Đăng ký</a>
+            </div>
+            
+            <!-- Nút giới thiệu -->
+            <div class="intro-section">
+                <button id="intro-btn" class="btn-intro" title="Giới thiệu Thư Viện AI">
+                    <span>ℹ️</span> Giới thiệu
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tìm kiếm và lọc model -->
+        <div class="model-filters">
+            <div class="filters-header">
+                <h3>🎨 Bộ lọc & Tìm kiếm AI Models</h3>
+                <div class="filter-status">
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <label for="model-search">🔍 Tìm kiếm model:</label>
+                <input type="text" id="model-search" placeholder="Tìm kiếm model (VD: GPT, Claude, Gemini...)" />
+                <div class="search-suggestions" id="search-suggestions"></div>
+            </div>      
+            </div>
+            <div class="provider-container">
+                <label>🤖 Chọn nhà cung cấp AI:</label>
+                <div class="provider-list" id="provider-list">
+                    <div class="provider-option active" data-value="">
+                        <span class="provider-icon">🧠</span>
+                        <span class="provider-name">Tất cả providers</span>
+                        <span class="provider-count" id="count-all"></span>
+                    </div>
+                    <div class="provider-option" data-value="openai">
+                        <span class="provider-icon">🟢</span>
+                        <span class="provider-name">OpenAI</span>
+                        <span class="provider-count" id="count-openai"></span>
+                    </div>
+                    <div class="provider-option" data-value="openai-plus">
+                        <span class="provider-icon">🟣</span>
+                        <span class="provider-name">OpenAI Plus</span>
+                        <span class="provider-count" id="count-openai-plus"></span>
+                    </div>
+                    <div class="provider-option" data-value="claude">
+                        <span class="provider-icon">🅰️</span>
+                        <span class="provider-name">Anthropic</span>
+                        <span class="provider-count" id="count-claude"></span>
+                    </div>
+                    <div class="provider-option" data-value="google">
+                        <span class="provider-icon">🔵</span>
+                        <span class="provider-name">Google</span>
+                        <span class="provider-count" id="count-google"></span>
+                    </div>
+                    <div class="provider-option" data-value="image">
+                        <span class="provider-icon">🎨</span>
+                        <span class="provider-name">Midjourney</span>
+                        <span class="provider-count" id="count-image"></span>
+                    </div>
+                    <div class="provider-option" data-value="chinese">
+                        <span class="provider-icon">🟠</span>
+                        <span class="provider-name">Alibaba</span>
+                        <span class="provider-count" id="count-chinese"></span>
+                    </div>
+                    <div class="provider-option" data-value="deepseek">
+                        <span class="provider-icon">🔷</span>
+                        <span class="provider-name">DeepSeek</span>
+                        <span class="provider-count" id="count-deepseek"></span>
+                    </div>
+                    <div class="provider-option" data-value="video">
+                        <span class="provider-icon">🎬</span>
+                        <span class="provider-name">Kling</span>
+                        <span class="provider-count" id="count-video"></span>
+                    </div>
+                    <div class="provider-option" data-value="siliconflow">
+                        <span class="provider-icon">🌊</span>
+                        <span class="provider-name">SiliconFlow</span>
+                        <span class="provider-count" id="count-siliconflow"></span>
+                    </div>
+                    <div class="provider-option" data-value="doubao">
+                        <span class="provider-icon">⚫</span>
+                        <span class="provider-name">doubao</span>
+                        <span class="provider-count" id="count-doubao"></span>
+                    </div>
+                    <div class="provider-option" data-value="other">
+                        <span class="provider-icon">🔧</span>
+                        <span class="provider-name">Khác</span>
+                        <span class="provider-count" id="count-other"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Nút xóa bộ lọc -->
+            <div class="filter-actions">
+                <button id="reset-filters-btn" class="reset-btn">
+                    <span class="btn-icon">🗑️</span>
+                    <span class="btn-text">Xóa bộ lọc</span>
+                </button>
+                <div class="current-filter-status" id="current-filter-status">
+                    <span>📋 Đang hiển thị: Tất cả models</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="model-select-container">
+            <label for="model-select">🤖 Chọn mô hình AI:</label>
+            <div class="model-count-info" id="model-count-info">
+                <span class="total-models">Tổng: 0 models</span>
+                <span class="filtered-models">Hiển thị: 0 models</span>
+            </div>
+            <select id="model-select" size="8">
+            <option value="ensemble">🤖 chế độ mặc định</option>
+            
+            <!-- === OPENAI MODELS === -->
+            <option value="gpt-3.5-turbo">1. GPT-3.5 Turbo</option>
+            <option value="gpt-3.5-turbo-0125">2. GPT-3.5 Turbo (0125)</option>
+            <option value="gpt-3.5-turbo-0613">3. GPT-3.5 Turbo (0613)</option>
+            <option value="gpt-3.5-turbo-1106">4. GPT-3.5 Turbo (1106)</option>
+            <option value="gpt-3.5-turbo-16k">5. GPT-3.5 Turbo 16K</option>
+            <option value="gpt-3.5-turbo-16k-0613">6. GPT-3.5 Turbo 16K (0613)</option>
+            <option value="gpt-3.5-turbo-instruct">7. GPT-3.5 Turbo Instruct</option>
+            <option value="gpt-3.5-turbo-instruct-0914">8. GPT-3.5 Turbo Instruct (0914)</option>
+            
+            <option value="gpt-4">9. GPT-4</option>
+            <option value="gpt-4-0125-preview">10. GPT-4 (0125 Preview)</option>
+            <option value="gpt-4-0613">11. GPT-4 (0613)</option>
+            <option value="gpt-4-1106-preview">12. GPT-4 (1106 Preview)</option>
+            <option value="gpt-4-32k">13. GPT-4 32K</option>
+            <option value="gpt-4-32k-0613">14. GPT-4 32K (0613)</option>
+            <option value="gpt-4-turbo">15. GPT-4 Turbo</option>
+            <option value="gpt-4-turbo-2024-04-09">16. GPT-4 Turbo (2024-04-09)</option>
+            <option value="gpt-4-turbo-preview">17. GPT-4 Turbo Preview</option>
+            <option value="gpt-4-vision-preview">18. GPT-4 Vision Preview</option>
+            <option value="gpt-4-all">19. GPT-4 All</option>
+            <option value="gpt-4-gizmo-*">20. GPT-4 Gizmo (*)</option>
+            
+            <option value="gpt-4.1-2025-04-14">21. GPT-4.1 (2025-04-14)</option>
+            <option value="gpt-4.1-mini-2025-04-14">22. GPT-4.1 Mini (2025-04-14)</option>
+            <option value="gpt-4.1-nano-2025-04-14">23. GPT-4.1 Nano (2025-04-14)</option>
+            
+            <option value="gpt-4o">24. GPT-4o</option>
+            <option value="gpt-4o-2024-05-13">25. GPT-4o (2024-05-13)</option>
+            <option value="gpt-4o-2024-08-06">26. GPT-4o (2024-08-06)</option>
+            <option value="gpt-4o-2024-11-20">27. GPT-4o (2024-11-20)</option>
+            <option value="gpt-4o-all">28. GPT-4o All</option>
+            <option value="gpt-4o-image-vip">29. GPT-4o Image VIP</option>
+            <option value="gpt-4o-audio-preview">30. GPT-4o Audio Preview</option>
+            <option value="gpt-4o-audio-preview-2024-10-01">31. GPT-4o Audio Preview (2024-10-01)</option>
+            <option value="gpt-4o-audio-preview-2024-12-17">32. GPT-4o Audio Preview (2024-12-17)</option>
+            <option value="gpt-4o-mini">33. GPT-4o Mini</option>
+            <option value="gpt-4o-mini-2024-07-18">34. GPT-4o Mini (2024-07-18)</option>
+            <option value="gpt-4o-mini-transcribe">35. GPT-4o Mini Transcribe</option>
+            <option value="gpt-4o-mini-tts">36. GPT-4o Mini TTS</option>
+            <option value="gpt-4o-realtime-preview">37. GPT-4o Realtime Preview</option>
+            <option value="gpt-4o-realtime-preview-2024-10-01">38. GPT-4o Realtime Preview (2024-10-01)</option>
+            <option value="gpt-4o-search-preview-2025-03-11">39. GPT-4o Search Preview</option>
+            <option value="gpt-4o-transcribe">40. GPT-4o Transcribe</option>
+            
+            <option value="gpt-5-2025-08-07">41. GPT-5 (2025-08-07)</option>
+            <option value="gpt-5-chat-latest">42. GPT-5 Chat Latest</option>
+            <option value="gpt-5-mini-2025-08-07">43. GPT-5 Mini (2025-08-07)</option>
+            <option value="gpt-5-nano-2025-08-07">44. GPT-5 Nano (2025-08-07)</option>
+            
+            <option value="o1">45. OpenAI o1</option>
+            <option value="o1-2024-12-17">46. OpenAI o1 (2024-12-17)</option>
+            <option value="o1-all">47. OpenAI o1 All</option>
+            <option value="o1-mini">48. OpenAI o1 Mini</option>
+            <option value="o1-mini-2024-09-12">49. OpenAI o1 Mini (2024-09-12)</option>
+            <option value="o1-mini-all">50. OpenAI o1 Mini All</option>
+            <option value="o1-preview">51. OpenAI o1 Preview</option>
+            <option value="o1-preview-2024-09-12">52. OpenAI o1 Preview (2024-09-12)</option>
+            <option value="o1-preview-all">53. OpenAI o1 Preview All</option>
+            <option value="o1-pro-all">54. OpenAI o1 Pro All</option>
+            
+            <option value="o3">55. OpenAI o3</option>
+            <option value="o3-2025-04-16">56. OpenAI o3 (2025-04-16)</option>
+            <option value="o3-all">57. OpenAI o3 All</option>
+            <option value="o3-deep-research">58. OpenAI o3 Deep Research</option>
+            <option value="o3-deep-research-2025-06-26">59. OpenAI o3 Deep Research (2025-06-26)</option>
+            <option value="o3-mini">60. OpenAI o3 Mini</option>
+            <option value="o3-mini-2025-01-31">61. OpenAI o3 Mini (2025-01-31)</option>
+            <option value="o3-mini-all">62. OpenAI o3 Mini All</option>
+            <option value="o3-mini-high-all">63. OpenAI o3 Mini High All</option>
+            <option value="o3-pro">64. OpenAI o3 Pro</option>
+            <option value="o3-pro-2025-06-10">65. OpenAI o3 Pro (2025-06-10)</option>
+            <option value="o3-pro-all">66. OpenAI o3 Pro All</option>
+            
+            <option value="o4-mini">67. OpenAI o4 Mini</option>
+            <option value="o4-mini-2025-04-16">68. OpenAI o4 Mini (2025-04-16)</option>
+            <option value="o4-mini-deep-research">69. OpenAI o4 Mini Deep Research</option>
+            <option value="o4-mini-deep-research-2025-06-26">70. OpenAI o4 Mini Deep Research (2025-06-26)</option>
+            <option value="o4-mini-all">71. OpenAI o4 Mini All</option>
+            
+            <option value="gpt-image-1">72. GPT Image 1</option>
+            <option value="gpt-image-1-all">73. GPT Image 1 All</option>
+            <option value="gpt-oss-120b">74. GPT OSS 120B</option>
+            <option value="gpt-oss-20b">75. GPT OSS 20B</option>
+            
+            <!-- === CLAUDE MODELS === -->
+            <option value="claude-3-haiku-20240307">76. Claude 3 Haiku (20240307)</option>
+            <option value="claude-3-sonnet-20240229">77. Claude 3 Sonnet (20240229)</option>
+            <option value="claude-3-opus-20240229">78. Claude 3 Opus (20240229)</option>
+            
+            <option value="claude-3-5-haiku-20241022">79. Claude 3.5 Haiku (20241022)</option>
+            <option value="claude-3-5-sonnet-20240620">80. Claude 3.5 Sonnet (20240620)</option>
+            <option value="claude-3-5-sonnet-20241022">81. Claude 3.5 Sonnet (20241022)</option>
+            <option value="claude-3-5-sonnet-latest">82. Claude 3.5 Sonnet (Latest)</option>
+            <option value="claude-3-5-sonnet-all">83. Claude 3.5 Sonnet (All)</option>
+            
+            <option value="claude-3-7-sonnet-20250219">84. Claude 3.7 Sonnet (20250219)</option>
+            <option value="claude-3-7-sonnet-20250219-thinking">85. Claude 3.7 Sonnet Thinking</option>
+            
+            <option value="claude-opus-4-20250514">86. Claude Opus 4 (20250514)</option>
+            <option value="claude-opus-4-20250514-thinking">87. Claude Opus 4 Thinking</option>
+            <option value="claude-opus-4-1-20250805">88. Claude Opus 4.1 (20250805)</option>
+            <option value="claude-opus-4-1-20250805-thinking">89. Claude Opus 4.1 Thinking</option>
+            
+            <option value="claude-sonnet-4-20250514">90. Claude Sonnet 4 (20250514)</option>
+            <option value="claude-sonnet-4-20250514-thinking">91. Claude Sonnet 4 Thinking</option>
+            
+            <!-- === GOOGLE MODELS === -->
+            <option value="gemini-1.5-flash-002">92. Gemini 1.5 Flash (002)</option>
+            <option value="gemini-1.5-flash-latest">93. Gemini 1.5 Flash (Latest)</option>
+            <option value="gemini-1.5-pro-002">94. Gemini 1.5 Pro (002)</option>
+            <option value="gemini-1.5-pro-latest">95. Gemini 1.5 Pro (Latest)</option>
+            
+            <option value="gemini-2.0-flash">96. Gemini 2.0 Flash</option>
+            <option value="gemini-2.0-flash-001">97. Gemini 2.0 Flash (001)</option>
+            <option value="gemini-2.0-flash-lite">98. Gemini 2.0 Flash Lite</option>
+            <option value="gemini-2.0-flash-lite-001">99. Gemini 2.0 Flash Lite (001)</option>
+            <option value="gemini-2.0-flash-preview-image-generation">100. Gemini 2.0 Flash Preview Image Gen</option>
+            
+            <option value="gemini-2.5-flash">101. Gemini 2.5 Flash</option>
+            <option value="qwen3-235b-a22b">102. Qwen3 235B A22B</option>
+            <option value="qwen3-30b-a3b">103. Qwen3 30B A3B</option>
+            <option value="qwen3-32b">104. Qwen3 32B</option>
+            <option value="qwen3-coder-plus">105. Qwen3 Coder Plus</option>
+            <option value="qwq-32b">106. QwQ 32B</option>
+            <option value="qwq-72b-preview">107. QwQ 72B Preview</option>
+            <option value="qwq-plus">108. QwQ Plus</option>
+            <option value="qwq-plus-latest">109. QwQ Plus (Latest)</option>
+            <option value="yi-large">110. Yi Large</option>
+            <option value="yi-lightning">111. Yi Lightning</option>
+            <option value="yi-vision">112. Yi Vision</option>
+            <option value="glm-4">113. GLM-4</option>
+            <option value="glm-4-air">114. GLM-4 Air</option>
+            <option value="glm-4-flash">115. GLM-4 Flash</option>
+            <option value="glm-4.5">116. GLM-4.5</option>
+            <option value="glm-4.5-air">117. GLM-4.5 Air</option>
+            <option value="glm-4.5-flash">118. GLM-4.5 Flash</option>
+            <option value="hunyuan-large">119. Hunyuan Large</option>
+            <option value="hunyuan-standard">120. Hunyuan Standard</option>
+            <option value="hunyuan-t1">121. Hunyuan T1</option>
+            <option value="hunyuan-t1-latest">122. Hunyuan T1 (Latest)</option>
+            <option value="kimi-k2-0711-preview">123. Kimi K2 Preview</option>
+            <option value="kimi-k2-instruct">124. Kimi K2 Instruct</option>
+            <option value="ernie-4.5-turbo-128k">125. ERNIE 4.5 Turbo 128K</option>
+            <option value="dall-e-3">126. DALL-E 3</option>
+            <option value="stable-diffusion">127. Stable Diffusion</option>
+            <option value="mistral-large-latest">128. Mistral Large (Latest)</option>
+            <option value="mistral-small-latest">129. Mistral Small (Latest)</option>
+            <option value="llama-3.1-405b-instruct">130. Llama 3.1 405B Instruct</option>
+            <option value="llama-2-70b">131. Llama 2 70B</option>
+            <option value="phi-4">132. Phi-4</option>
+            <option value="whisper-1">133. Whisper-1</option>
+            <option value="tts-1">134. TTS-1</option>
+            <option value="tts-1-hd">135. TTS-1 HD</option>
+            <option value="mj_blend">136. MJ Blend</option>
+            <option value="mj_custom_zoom">137. MJ Custom Zoom</option>
+            <option value="mj_describe">138. MJ Describe</option>
+            <option value="mj_high_variation">139. MJ High Variation</option>
+            <option value="mj_imagine">140. MJ Imagine</option>
+            <option value="mj_inpaint">141. MJ Inpaint</option>
+            <option value="mj_low_variation">142. MJ Low Variation</option>
+            <option value="mj_modal">143. MJ Modal</option>
+            <option value="mj_pan">144. MJ Pan</option>
+            <option value="mj_reroll">145. MJ Reroll</option>
+            <option value="mj_shorten">146. MJ Shorten</option>
+            <option value="mj_upload">147. MJ Upload</option>
+            <option value="mj_uploads">148. MJ Uploads</option>
+            <option value="mj_upscale">149. MJ Upscale</option>
+            <option value="mj_variation">150. MJ Variation</option>
+            <option value="mj_zoom">151. MJ Zoom</option>
+            <option value="swap_face">152. Swap Face</option>
+            <option value="Dolphin3.0-R1-Mistral-24B">153. Dolphin 3.0 R1 Mistral 24B</option>
+            <option value="ERNIE-Speed-128K">154. ERNIE Speed 128K</option>
+            <option value="ERNIE-Speed-8K">155. ERNIE Speed 8K</option>
+            <option value="Embedding-V1">156. Embedding V1</option>
+            <option value="MiniMax-Hailuo-02">157. MiniMax Hailuo 02</option>
+            <option value="Phi-4">158. Phi-4 (Advanced)</option>
+            <option value="Pro/BAAI/bge-reranker-v2-m3">159. BAAI BGE Reranker V2 M3</option>
+            <option value="Qwen/Qwen3-Reranker-0.6B">160. Qwen3 Reranker 0.6B</option>
+            <option value="Qwen/Qwen3-Reranker-4B">161. Qwen3 Reranker 4B</option>
+            <option value="Qwen/Qwen3-Reranker-8B">162. Qwen3 Reranker 8B</option>
+            <option value="SparkDesk-v1.1">163. SparkDesk v1.1</option>
+            <option value="SparkDesk-v2.1">164. SparkDesk v2.1</option>
+            <option value="SparkDesk-v3.1">165. SparkDesk v3.1</option>
+            <option value="SparkDesk-v3.5">166. SparkDesk v3.5</option>
+            <option value="andreasjansson/stable-diffusion-animation">167. Stable Diffusion Animation</option>
+            <option value="babbage-002">168. Babbage-002</option>
+            <option value="black-forest-labs/flux-1.1-pro">169. FLUX 1.1 Pro</option>
+            <option value="black-forest-labs/flux-1.1-pro-ultra">170. FLUX 1.1 Pro Ultra</option>
+            <option value="black-forest-labs/flux-fill-dev">171. FLUX Fill Dev</option>
+            <option value="black-forest-labs/flux-fill-pro">172. FLUX Fill Pro</option>
+            <option value="black-forest-labs/flux-kontext-dev">173. FLUX Kontext Dev</option>
+            <option value="black-forest-labs/flux-kontext-max">174. FLUX Kontext Max</option>
+            <option value="black-forest-labs/flux-kontext-pro">175. FLUX Kontext Pro</option>
+            <option value="cjwbw/rembg">176. RemBG</option>
+            <option value="claude-3-5-sonnet-all">177. Claude 3.5 Sonnet (All)</option>
+            <option value="claude-3-opus-20240229">178. Claude 3 Opus (20240229)</option>
+            <option value="claude-3-sonnet-20240229">179. Claude 3 Sonnet (20240229)</option>
+            <option value="davinci-002">180. Davinci-002</option>
+            <option value="doubao-1-5-lite-32k">181. Doubao 1.5 Lite 32K</option>
+            <option value="doubao-1-5-lite-32k-250115">182. Doubao 1.5 Lite 32K (250115)</option>
+            <option value="doubao-1-5-pro-256k-250115">183. Doubao 1.5 Pro 256K (250115)</option>
+            <option value="doubao-1-5-pro-32k-250115">184. Doubao 1.5 Pro 32K (250115)</option>
+            <option value="doubao-1-5-thinking-pro-250415">185. Doubao 1.5 Thinking Pro (250415)</option>
+            <option value="doubao-1-5-thinking-pro-m-250415">186. Doubao 1.5 Thinking Pro M (250415)</option>
+            <option value="doubao-1-5-thinking-vision-pro-250428">187. Doubao 1.5 Thinking Vision Pro (250428)</option>
+            <option value="doubao-1-5-vision-pro-32k">188. Doubao 1.5 Vision Pro 32K</option>
+            <option value="doubao-1-5-vision-pro-32k-250115">189. Doubao 1.5 Vision Pro 32K (250115)</option>
+            <option value="doubao-1.5-pro-256k">190. Doubao 1.5 Pro 256K</option>
+            <option value="doubao-1-5-pro-32k">191. Doubao 1.5 Pro 32K</option>
+            <option value="doubao-1.5-vision-pro-32k">192. Doubao 1.5 Vision Pro 32K</option>
+            <option value="doubao-pro-32k-241215">193. Doubao Pro 32K (241215)</option>
+            <option value="doubao-seed-1-6-250615">194. Doubao Seed 1.6 (250615)</option>
+            <option value="doubao-seed-1-6-flash-250615">195. Doubao Seed 1.6 Flash (250615)</option>
+            <option value="doubao-seed-1-6-thinking-250615">196. Doubao Seed 1.6 Thinking (250615)</option>
+            <option value="doubao-seed-1-6-thinking-250715">197. Doubao Seed 1.6 Thinking (250715)</option>
+            <option value="doubao-seededit-3-0-i2i-250628">198. Doubao SeedEdit 3.0 I2I (250628)</option>
+            <option value="doubao-seedream-3-0-t2i-250415">199. Doubao SeedDream 3.0 T2I (250415)</option>
+            <option value="ernie-3.5-128k">200. ERNIE 3.5 128K</option>
+            <option value="ernie-3.5-128k-preview">201. ERNIE 3.5 128K Preview</option>
+            <option value="ernie-3.5-8k">202. ERNIE 3.5 8K</option>
+            <option value="ernie-3.5-8k-0613">203. ERNIE 3.5 8K (0613)</option>
+            <option value="ernie-3.5-8k-0701">204. ERNIE 3.5 8K (0701)</option>
+            <option value="ernie-3.5-8k-preview">205. ERNIE 3.5 8K Preview</option>
+            <option value="ernie-4.0-8k">206. ERNIE 4.0 8K</option>
+            <option value="ernie-4.0-8k-latest">207. ERNIE 4.0 8K Latest</option>
+            <option value="ernie-4.0-8k-preview">208. ERNIE 4.0 8K Preview</option>
+            <option value="ernie-4.0-turbo-128k">209. ERNIE 4.0 Turbo 128K</option>
+            <option value="ernie-4.0-turbo-8k">210. ERNIE 4.0 Turbo 8K</option>
+            <option value="ernie-4.0-turbo-8k-0628">211. ERNIE 4.0 Turbo 8K (0628)</option>
+            <option value="ernie-4.0-turbo-8k-latest">212. ERNIE 4.0 Turbo 8K Latest</option>
+            <option value="ernie-4.0-turbo-8k-preview">213. ERNIE 4.0 Turbo 8K Preview</option>
+            <option value="ernie-4.5-0.3b">214. ERNIE 4.5 0.3B</option>
+            <option value="ernie-4.5-21b-a3b">215. ERNIE 4.5 21B A3B</option>
+            <option value="ernie-4.5-8k-preview">216. ERNIE 4.5 8K Preview</option>
+            <option value="ernie-4.5-turbo-128k">217. ERNIE 4.5 Turbo 128K</option>
+            <option value="ernie-4.5-turbo-128k-preview">218. ERNIE 4.5 Turbo 128K Preview</option>
+            <option value="ernie-4.5-turbo-32k">219. ERNIE 4.5 Turbo 32K</option>
+            <option value="ernie-4.5-turbo-vl-32k">220. ERNIE 4.5 Turbo VL 32K</option>
+            <option value="ernie-4.5-turbo-vl-32k-preview">221. ERNIE 4.5 Turbo VL 32K Preview</option>
+            <option value="ernie-4.5-turbo-vl-preview">222. ERNIE 4.5 Turbo VL Preview</option>
+            <option value="ernie-4.5-vl-28b-a3b">223. ERNIE 4.5 VL 28B A3B</option>
+            <option value="ernie-x1-32k">224. ERNIE X1 32K</option>
+            <option value="ernie-x1-32k-preview">225. ERNIE X1 32K Preview</option>
+            <option value="ernie-x1-turbo-32k">226. ERNIE X1 Turbo 32K</option>
+            <option value="ernie-x1-turbo-32k-preview">227. ERNIE X1 Turbo 32K Preview</option>
+            <option value="fal-ai/flux-1/dev">228. FAL AI FLUX 1 Dev</option>
+            <option value="fal-ai/flux-1/dev/image-to-image">229. FAL AI FLUX 1 Dev I2I</option>
+            <option value="fal-ai/flux-1/dev/redux">230. FAL AI FLUX 1 Dev Redux</option>
+            <option value="fal-ai/flux-1/schnell">231. FAL AI FLUX 1 Schnell</option>
+            <option value="fal-ai/flux-1/schnell/redux">232. FAL AI FLUX 1 Schnell Redux</option>
+            <option value="fal-ai/flux-pro/kontext">233. FAL AI FLUX Pro Kontext</option>
+            <option value="fal-ai/flux-pro/kontext/max">234. FAL AI FLUX Pro Kontext Max</option>
+            <option value="fal-ai/flux-pro/kontext/max/multi">235. FAL AI FLUX Pro Kontext Max Multi</option>
+            <option value="fal-ai/flux-pro/kontext/max/text-to-image">236. FAL AI FLUX Pro Kontext Max T2I</option>
+            <option value="fal-ai/flux-pro/kontext/multi">237. FAL AI FLUX Pro Kontext Multi</option>
+            <option value="fal-ai/flux-pro/kontext/text-to-image">238. FAL AI FLUX Pro Kontext T2I</option>
+            <option value="fal-ai/nano-banana">239. FAL AI Nano Banana</option>
+            <option value="flux-dev">240. FLUX Dev</option>
+            <option value="flux-kontext-apps/multi-image-kontext-max">241. FLUX Kontext Apps Multi Image Max</option>
+            <option value="flux-kontext-apps/multi-image-kontext-pro">242. FLUX Kontext Apps Multi Image Pro</option>
+            <option value="flux-kontext-max">243. FLUX Kontext Max</option>
+            <option value="flux-kontext-pro">244. FLUX Kontext Pro</option>
+            <option value="flux-pro">245. FLUX Pro</option>
+            <option value="flux-pro-1.1-ultra">246. FLUX Pro 1.1 Ultra</option>
+            <option value="flux-pro-max">247. FLUX Pro Max</option>
+            <option value="flux-schnell">248. FLUX Schnell</option>
+            <option value="flux.1-dev">249. FLUX.1 Dev</option>
+            <option value="flux.1-kontext-dev">250. FLUX.1 Kontext Dev</option>
+            <option value="flux.1-kontext-pro">251. FLUX.1 Kontext Pro</option>
+            <option value="flux.1.1-pro">252. FLUX.1.1 Pro</option>
+            <option value="gemma-2b-it">253. Gemma 2B IT</option>
+            <option value="gemma-7b-it">254. Gemma 7B IT</option>
+            <option value="glm-3-turbo">255. GLM-3 Turbo</option>
+            <option value="glm-4-airx">256. GLM-4 AirX</option>
+            <option value="glm-4-long">257. GLM-4 Long</option>
+            <option value="glm-4.5-airx">258. GLM-4.5 AirX</option>
+            <option value="glm-4.5-x">259. GLM-4.5 X</option>
+            <option value="google/imagen-4">260. Google Imagen 4</option>
+            <option value="google/imagen-4-fast">261. Google Imagen 4 Fast</option>
+            <option value="google/imagen-4-ultra">262. Google Imagen 4 Ultra</option>
+            <option value="gpt-4-all">263. GPT-4 All</option>
+            <option value="gpt-4-gizmo-*">264. GPT-4 Gizmo</option>
+            <option value="gpt-4o-all">265. GPT-4o All</option>
+            <option value="gpt-4o-image-vip">266. GPT-4o Image VIP</option>
+            <option value="gpt-image-1">267. GPT Image 1</option>
+            <option value="gpt-image-1-all">268. GPT Image 1 All</option>
+            <option value="gpt-oss-120b">269. GPT OSS 120B</option>
+            <option value="gpt-oss-20b">270. GPT OSS 20B</option>
+            <option value="grok-2-1212">271. Grok-2 (1212)</option>
+            <option value="grok-3-deepsearch">272. Grok-3 DeepSearch</option>
+            <option value="grok-3-image">273. Grok-3 Image</option>
+            <option value="grok-3-reasoner">274. Grok-3 Reasoner</option>
+            <option value="grok-3-reasoning">275. Grok-3 Reasoning</option>
+            <option value="grok-4">276. Grok-4</option>
+            <option value="grok-beta">277. Grok Beta</option>
+            <option value="hunyuan-a13b">278. Hunyuan A13B</option>
+            <option value="hunyuan-code">279. Hunyuan Code</option>
+            <option value="hunyuan-functioncall">280. Hunyuan FunctionCall</option>
+            <option value="hunyuan-role">281. Hunyuan Role</option>
+            <option value="hunyuan-standard-256K">282. Hunyuan Standard 256K</option>
+            <option value="hunyuan-t1-20250711">283. Hunyuan T1 (20250711)</option>
+            <option value="hunyuan-t1-vision">284. Hunyuan T1 Vision</option>
+            <option value="hunyuan-t1-vision-20250619">285. Hunyuan T1 Vision (20250619)</option>
+            <option value="hunyuan-turbos-20250716">286. Hunyuan Turbos (20250716)</option>
+            <option value="hunyuan-turbos-latest">287. Hunyuan Turbos Latest</option>
+            <option value="hunyuan-turbos-longtext-128k-20250325">288. Hunyuan Turbos LongText 128K</option>
+            <option value="hunyuan-turbos-vision">289. Hunyuan Turbos Vision</option>
+            <option value="hunyuan-turbos-vision-20250619">290. Hunyuan Turbos Vision (20250619)</option>
+            <option value="ideogram-ai/ideogram-v2-turbo">291. Ideogram AI V2 Turbo</option>
+            <option value="ideogram_describe">292. Ideogram Describe</option>
+            <option value="ideogram_edit_V_3_DEFAULT">293. Ideogram Edit V3 Default</option>
+            <option value="ideogram_edit_V_3_QUALITY">294. Ideogram Edit V3 Quality</option>
+            <option value="ideogram_edit_V_3_TURBO">295. Ideogram Edit V3 Turbo</option>
+            <option value="ideogram_generate_V_1">296. Ideogram Generate V1</option>
+            <option value="ideogram_generate_V_1_TURBO">297. Ideogram Generate V1 Turbo</option>
+            <option value="ideogram_generate_V_2">298. Ideogram Generate V2</option>
+            <option value="ideogram_generate_V_2_TURBO">299. Ideogram Generate V2 Turbo</option>
+            <option value="ideogram_generate_V_3_DEFAULT">300. Ideogram Generate V3 Default</option>
+            <option value="ideogram_generate_V_3_QUALITY">301. Ideogram Generate V3 Quality</option>
+            <option value="ideogram_generate_V_3_TURBO">302. Ideogram Generate V3 Turbo</option>
+            <option value="ideogram_reframe_V_3_DEFAULT">303. Ideogram Reframe V3 Default</option>
+            <option value="ideogram_reframe_V_3_QUALITY">304. Ideogram Reframe V3 Quality</option>
+            <option value="ideogram_reframe_V_3_TURBO">305. Ideogram Reframe V3 Turbo</option>
+            <option value="ideogram_remix_V_1">306. Ideogram Remix V1</option>
+            <option value="ideogram_remix_V_1_TURBO">307. Ideogram Remix V1 Turbo</option>
+            <option value="ideogram_remix_V_2">308. Ideogram Remix V2</option>
+            <option value="ideogram_remix_V_2_TURBO">309. Ideogram Remix V2 Turbo</option>
+            <option value="ideogram_remix_V_3_DEFAULT">310. Ideogram Remix V3 Default</option>
+            <option value="ideogram_remix_V_3_QUALITY">311. Ideogram Remix V3 Quality</option>
+            <option value="ideogram_remix_V_3_TURBO">312. Ideogram Remix V3 Turbo</option>
+            <option value="ideogram_replace_background_V_3_DEFAULT">313. Ideogram Replace BG V3 Default</option>
+            <option value="ideogram_replace_background_V_3_QUALITY">314. Ideogram Replace BG V3 Quality</option>
+            <option value="ideogram_replace_background_V_3_TURBO">315. Ideogram Replace BG V3 Turbo</option>
+            <option value="ideogram_upscale">316. Ideogram Upscale</option>
+            <option value="jimeng-videos">317. Jimeng Videos</option>
+            <option value="kimi-k2-0711-preview-search">318. Kimi K2 Preview Search</option>
+            <option value="kimi-k2-250711">319. Kimi K2 (250711)</option>
+            <option value="kling-effects">320. Kling Effects</option>
+            <option value="kling-image">321. Kling Image</option>
+            <option value="kling-kolors-virtual-try-on">322. Kling Kolors Virtual Try-On</option>
+            <option value="kling-lip-sync">323. Kling Lip Sync</option>
+            <option value="kling-video">324. Kling Video</option>
+            <option value="kling-video-extend">325. Kling Video Extend</option>
+            <option value="llama-2-13b">326. Llama 2 13B</option>
+            <option value="llama-3-sonar-large-32k-chat">327. Llama 3 Sonar Large 32K Chat</option>
+            <option value="llama-3-sonar-small-32k-chat">328. Llama 3 Sonar Small 32K Chat</option>
+            <option value="llama-3.1-405b">329. Llama 3.1 405B</option>
+            <option value="lucataco/animate-diff">330. Lucataco Animate Diff</option>
+            <option value="lucataco/flux-schnell-lora">331. Lucataco FLUX Schnell LoRA</option>
+            <option value="lucataco/remove-bg">332. Lucataco Remove BG</option>
+            <option value="luma_video_api">333. Luma Video API</option>
+            <option value="luma_video_extend_api">334. Luma Video Extend API</option>
+            <option value="mai-ds-r1">335. Mai DS R1</option>
+            <option value="meta-llama/llama-4-maverick">336. Meta Llama 4 Maverick</option>
+            <option value="meta-llama/llama-4-scout">337. Meta Llama 4 Scout</option>
+            <option value="minimax/video-01">338. MiniMax Video 01</option>
+            <option value="minimax/video-01-live">339. MiniMax Video 01 Live</option>
+            <option value="netease-youdao/bce-reranker-base_v1">340. NetEase Youdao BCE Reranker Base V1</option>
+            <option value="o1-all">341. OpenAI o1 All</option>
+            <option value="o1-mini-all">342. OpenAI o1 Mini All</option>
+            <option value="o1-preview-all">343. OpenAI o1 Preview All</option>
+            <option value="o1-pro-all">344. OpenAI o1 Pro All</option>
+            <option value="o3-all">345. OpenAI o3 All</option>
+            <option value="o3-mini-all">346. OpenAI o3 Mini All</option>
+            <option value="o3-mini-high-all">347. OpenAI o3 Mini High All</option>
+            <option value="o3-pro-all">348. OpenAI o3 Pro All</option>
+            <option value="o4-mini">349. OpenAI o4 Mini</option>
+            <option value="o4-mini-2025-04-16">350. OpenAI o4 Mini (2025-04-16)</option>
+            <option value="o4-mini-all">351. OpenAI o4 Mini All</option>
+            <option value="playground-v2.5">352. Playground V2.5</option>
+            <option value="prunaai/vace-14b">353. PrunaAI VACE 14B</option>
+            <option value="qvq-72b-preview">354. QVQ 72B Preview</option>
+            <option value="qwen-omni-turbo">355. Qwen Omni Turbo</option>
+            <option value="qwen-turbo-1101">356. Qwen Turbo (1101)</option>
+            <option value="qwen-turbo-2024-11-01">357. Qwen Turbo (2024-11-01)</option>
+            <option value="qwen-vl-max">358. Qwen VL Max</option>
+            <option value="qwen-vl-plus">359. Qwen VL Plus</option>
+            <option value="qwen2.5-32b-instruct">360. Qwen2.5 32B Instruct</option>
+            <option value="qwen2.5-vl-32b-instruct">361. Qwen2.5 VL 32B Instruct</option>
+            <option value="qwen2.5-vl-72b-instruct">362. Qwen2.5 VL 72B Instruct</option>
+            <option value="qwen3-235b-a22b-think">363. Qwen3 235B A22B Think</option>
+            <option value="qwen3-30b-a3b-think">364. Qwen3 30B A3B Think</option>
+            <option value="qwq-plus-2025-03-05">365. QwQ Plus (2025-03-05)</option>
+            <option value="recraft-ai/recraft-v3">366. Recraft AI V3</option>
+            <option value="recraft-ai/recraft-v3-svg">367. Recraft AI V3 SVG</option>
+            <option value="riffusion/riffusion">368. Riffusion</option>
+            <option value="runwayml-gen3a_turbo-10">369. RunwayML Gen3A Turbo 10</option>
+            <option value="runwayml-gen3a_turbo-5">370. RunwayML Gen3A Turbo 5</option>
+            <option value="runwayml-gen4_turbo-10">371. RunwayML Gen4 Turbo 10</option>
+            <option value="runwayml-gen4_turbo-5">372. RunwayML Gen4 Turbo 5</option>
+            <option value="sora_image">373. Sora Image</option>
+            <option value="stability-ai/sdxl">374. Stability AI SDXL</option>
+            <option value="stability-ai/stable-diffusion">375. Stability AI Stable Diffusion</option>
+            <option value="stability-ai/stable-diffusion-img2img">376. Stability AI SD Img2Img</option>
+            <option value="stability-ai/stable-diffusion-inpainting">377. Stability AI SD Inpainting</option>
+            <option value="stable-diffusion-3-2b">378. Stable Diffusion 3 2B</option>
+            <option value="sujaykhandekar/object-removal">379. Object Removal</option>
+            <option value="suno_lyrics">380. Suno Lyrics</option>
+            <option value="suno_music">381. Suno Music</option>
+            <option value="text-davinci-edit-001">382. Text Davinci Edit 001</option>
+            <option value="text-embedding-3-large">383. Text Embedding 3 Large</option>
+            <option value="text-embedding-3-small">384. Text Embedding 3 Small</option>
+            <option value="text-embedding-ada-002">385. Text Embedding Ada 002</option>
+            <option value="text-moderation-latest">386. Text Moderation Latest</option>
+            <option value="text-moderation-stable">387. Text Moderation Stable</option>
+            <option value="tts-1-1106">388. TTS-1 (1106)</option>
+            <option value="tts-1-hd-1106">389. TTS-1 HD (1106)</option>
+            <option value="gemini-2.0-flash-preview-image-generation">390. Gemini 2.0 Flash Preview Image Gen</option>
+            <option value="gemini-2.5-flash-image-preview">391. Gemini 2.5 Flash Image Preview</option>
+            <option value="gemini-2.5-flash-lite-preview-06-17">392. Gemini 2.5 Flash Lite Preview</option>
+            <option value="chatgpt-4o-latest">393. ChatGPT-4o Latest</option>
+            <option value="dall-e-2">394. DALL-E 2</option>
+            <option value="gpt-3.5-turbo-0301">395. GPT-3.5 Turbo (0301)</option>
+            <option value="gpt-4-0314">396. GPT-4 (0314)</option>
+            <option value="gpt-4-32k-0314">397. GPT-4 32K (0314)</option>
+            <option value="gpt-4o-audio-preview-2025-06-03">398. GPT-4o Audio Preview (2025-06-03)</option>
+            <option value="gpt-4o-search-preview-2025-03-11">399. GPT-4o Search Preview</option>
+            <option value="o4-mini-deep-research">400. OpenAI o4 Mini Deep Research</option>
+            <option value="o4-mini-deep-research-2025-06-26">401. OpenAI o4 Mini Deep Research (2025-06-26)</option>
+            <option value="text-ada-001">402. Text Ada 001</option>
+            <option value="text-babbage-001">403. Text Babbage 001</option>
+            <option value="text-curie-001">404. Text Curie 001</option>
+            <option value="doubao-1-5-thinking-pro-m-250428">405. Doubao 1.5 Thinking Pro M (250428)</option>
+            <option value="doubao-lite-128k">406. Doubao Lite 128K</option>
+            <option value="doubao-lite-32k">407. Doubao Lite 32K</option>
+            <option value="doubao-lite-4k">408. Doubao Lite 4K</option>
+            <option value="doubao-pro-128k">409. Doubao Pro 128K</option>
+            <option value="doubao-pro-32k-character">410. Doubao Pro 32K Character</option>
+            <option value="doubao-pro-4k">411. Doubao Pro 4K</option>
+            <option value="flux-dev">412. FLUX Dev</option>
+            <option value="flux-pro">413. FLUX Pro</option>
+            <option value="flux-pro-1.1-ultra">414. FLUX Pro 1.1 Ultra</option>
+            <option value="flux-pro-max">415. FLUX Pro Max</option>
+            <option value="flux-schnell">416. FLUX Schnell</option>
+            <option value="flux.1-dev">417. FLUX.1 Dev</option>
+            <option value="flux.1-kontext-dev">418. FLUX.1 Kontext Dev</option>
+            <option value="flux.1-kontext-pro">419. FLUX.1 Kontext Pro</option>
+            <option value="flux.1.1-pro">420. FLUX.1.1 Pro</option>
+            <option value="glm-3-turbo">421. GLM-3 Turbo</option>
+            <option value="glm-4-airx">422. GLM-4 AirX</option>
+            <option value="glm-4-long">423. GLM-4 Long</option>
+            <option value="glm-4.5-airx">424. GLM-4.5 AirX</option>
+            <option value="glm-4.5-x">425. GLM-4.5 X</option>
+            <option value="gpt-4-32K-0613">426. GPT-4 32K (0613)</option>
+            <option value="hunyuan-functioncall">427. Hunyuan Function Call</option>
+            <option value="hunyuan-role">428. Hunyuan Role</option>
+            <option value="hunyuan-t1">429. Hunyuan T1</option>
+            <option value="hunyuan-t1-20250711">430. Hunyuan T1 (20250711)</option>
+            <option value="hunyuan-t1-latest">431. Hunyuan T1 Latest</option>
+            <option value="hunyuan-t1-vision">432. Hunyuan T1 Vision</option>
+            <option value="hunyuan-t1-vision-20250619">433. Hunyuan T1 Vision (20250619)</option>
+            <option value="hunyuan-turbos-20250716">434. Hunyuan Turbos (20250716)</option>
+            <option value="hunyuan-turbos-latest">435. Hunyuan Turbos Latest</option>
+            <option value="hunyuan-turbos-longtext-128k-20250325">436. Hunyuan Turbos LongText 128K</option>
+            <option value="hunyuan-turbos-vision">437. Hunyuan Turbos Vision</option>
+            <option value="hunyuan-turbos-vision-20250619">438. Hunyuan Turbos Vision (20250619)</option>
+            <option value="grok-3">439. Grok-3</option>
+            <option value="grok-3-mini">440. Grok-3 Mini</option>
+            <option value="moonshot-v1-128k">441. Moonshot V1 128K</option>
+            <option value="moonshot-v1-32k">442. Moonshot V1 32K</option>
+            <option value="moonshot-v1-8k">443. Moonshot V1 8K</option>
+            <option value="yi-large-rag">444. Yi Large RAG</option>
+            <option value="yi-large-turbo">445. Yi Large Turbo</option>
+            <option value="yi-lightning">446. Yi Lightning</option>
+            <option value="yi-medium-200k">447. Yi Medium 200K</option>
+            <option value="yi-vision">448. Yi Vision</option>
+            <option value="babbage-002">449. Babbage 002</option>
+            <option value="davinci-002">450. Davinci 002</option>
+            <option value="deepseek-r1">451. DeepSeek R1</option>
+            <option value="deepseek-r1-250528">452. DeepSeek R1 (250528)</option>
+            <option value="deepseek-reasoner">453. DeepSeek Reasoner</option>
+            <option value="qwen-omni-turbo">454. Qwen Omni Turbo</option>
+            <option value="qwen-plus">455. Qwen Plus</option>
+            <option value="qwen-plus-latest">456. Qwen Plus Latest</option>
+            <option value="qwen-turbo">457. Qwen Turbo</option>
+            <option value="qwen-turbo-1101">458. Qwen Turbo (1101)</option>
+            <option value="qwen-turbo-2024-11-01">459. Qwen Turbo (2024-11-01)</option>
+            <option value="qwen-turbo-latest">460. Qwen Turbo Latest</option>
+            <option value="qwen-vl-max">461. Qwen VL Max</option>
+            <option value="qwen-vl-plus">462. Qwen VL Plus</option>
+            <option value="qwen2.5-72b-instruct">463. Qwen2.5 72B Instruct</option>
+            <option value="qwen2.5-7b-instruct">464. Qwen2.5 7B Instruct</option>
+            <option value="qwen2.5-vl-32b-instruct">465. Qwen2.5 VL 32B Instruct</option>
+            <option value="qwen2.5-vl-72b-instruct">466. Qwen2.5 VL 72B Instruct</option>
+            <option value="qwen3-0.6b">467. Qwen3 0.6B</option>
+            <option value="qwen3-1.7b">468. Qwen3 1.7B</option>
+            <option value="qwen3-14b">469. Qwen3 14B</option>
+            <option value="qwen3-235b-a22b">470. Qwen3 235B A22B</option>
+            <option value="qwen3-235b-a22b-instruct-2507">471. Qwen3 235B A22B Instruct (2507)</option>
+            <option value="qwen3-30b-a3b">472. Qwen3 30B A3B</option>
+            <option value="qwen3-32b">473. Qwen3 32B</option>
+            <option value="qwen3-4b">474. Qwen3 4B</option>
+            <option value="qwen3-8b">475. Qwen3 8B</option>
+            <option value="qwen3-coder-480b-a35b-instruct">476. Qwen3 Coder 480B A35B Instruct</option>
+            <option value="qwen3-coder-plus">477. Qwen3 Coder Plus</option>
+            <option value="qwen3-coder-plus-2025-07-22">478. Qwen3 Coder Plus (2025-07-22)</option>
+            <option value="qwq-32b">479. QWQ 32B</option>
+            <option value="qwq-plus">480. QWQ Plus</option>
+            <option value="qwq-plus-2025-03-05">481. QWQ Plus (2025-03-05)</option>
+            <option value="qwq-plus-latest">482. QWQ Plus Latest</option>
+            <option value="text-davinci-edit-001">483. Text Davinci Edit 001</option>
+            <option value="ERNIE-3.5-8K">484. ERNIE-3.5-8K</option>
+            <option value="ERNIE-4.0-8K">485. ERNIE-4.0-8K</option>
+            <option value="ERNIE-Speed-128K">486. ERNIE-Speed-128K</option>
+            <option value="ERNIE-Speed-8K">487. ERNIE-Speed-8K</option>
+            <option value="Embedding-V1">488. Embedding-V1</option>
+            <option value="deepseek-r1-2025-01-20">489. DeepSeek R1 (2025-01-20)</option>
+            <option value="deepseek-r1-searching">490. DeepSeek R1 Searching</option>
+            <option value="doubao-seed-1-6-thinking-250615">491. Doubao Seed 1.6 Thinking (250615)</option>
+            <option value="doubao-seed-1-6-thinking-250715">492. Doubao Seed 1.6 Thinking (250715)</option>
+            <option value="doubao-seededit-3-0-i2i-250628">493. Doubao SeedEdit 3.0 I2I (250628)</option>
+            <option value="doubao-seedream-3-0-t2i-250415">494. Doubao SeeDream 3.0 T2I (250415)</option>
+            <option value="ernie-x1-32k">495. ERNIE-X1-32K</option>
+            <option value="ernie-x1-32k-preview">496. ERNIE-X1-32K Preview</option>
+            <option value="ernie-x1-turbo-32k">497. ERNIE-X1-Turbo-32K</option>
+            <option value="ernie-x1-turbo-32k-preview">498. ERNIE-X1-Turbo-32K Preview</option>
+            <option value="gemma-2b-it">499. Gemma 2B IT</option>
+            <option value="gemma-7b-it">500. Gemma 7B IT</option>
+            <option value="gpt-4-all">501. GPT-4 All</option>
+            <option value="gpt-4-gizmo-*">502. GPT-4 Gizmo (*)</option>
+            <option value="gemini-2.5-flash-all">503. Gemini 2.5 Flash All</option>
+            <option value="gemini-2.5-flash-deepsearch">504. Gemini 2.5 Flash DeepSearch</option>
+            <option value="gemini-2.5-pro-all">505. Gemini 2.5 Pro All</option>
+            <option value="gemini-2.5-pro-deepsearch">506. Gemini 2.5 Pro DeepSearch</option>
+            <option value="veo2">507. VEO2</option>
+            <option value="veo2-fast">508. VEO2 Fast</option>
+            <option value="veo2-fast-components">509. VEO2 Fast Components</option>
+            <option value="veo2-fast-frames">510. VEO2 Fast Frames</option>
+            <option value="veo2-pro">511. VEO2 Pro</option>
+            <option value="veo3">512. VEO3</option>
+            <option value="veo3-fast">513. VEO3 Fast</option>
+            <option value="veo3-fast-frames">514. VEO3 Fast Frames</option>
+            <option value="veo3-frames">515. VEO3 Frames</option>
+            <option value="veo3-pro">516. VEO3 Pro</option>
+            <option value="veo3-pro-frames">517. VEO3 Pro Frames</option>
+        </select>
+        </div>
+        <!-- Upload tài liệu -->
+        <div class="document-section">
+            <h3>📄 Tài liệu</h3>
+            <a href="document-manager.html" class="manage-docs-button">📚 Quản lý tài liệu</a>
+            <input type="file" id="document-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none">
+            <button id="upload-btn" class="upload-button">📎 Tải nhanh</button>
+            <div id="document-info" class="document-info" style="display:none">
+                <p id="doc-name"></p>
+                <button id="remove-doc" class="remove-doc">❌ Xóa</button>
+            </div>
+        </div>
+
+        <!-- Chế độ xử lý
+        <div class="processing-mode">
+            <h3>⚙️ Chế độ xử lý</h3>
+            <label>
+                <input type="radio" name="processing-mode" value="single" checked>
+                <span>Đơn lẻ (1 AI)</span>
+            </label>
+            <label>
+                <input type="radio" name="processing-mode" value="ensemble">
+                <span>Ensemble (4 AI hàng đầu)</span>
+            </label>
+            <label>
+                <input type="radio" name="processing-mode" value="distributed">
+                <span>🚀 Phân tán (28 AI phân công)</span>
+            </label>
+        </div>
+
+        <div class="mode-info">
+            <p><strong>Chế độ Phân tán:</strong></p>
+            <p>28 AI sẽ phân công nhiệm vụ thông minh: AI mạnh xử lý việc nặng, AI khác kiểm duyệt và hoàn thiện!</p>
+        </div> -->
+        
+        <!-- Chat History Section -->
+        <div class="chat-history-section">
+            <div class="chat-history-header">
+                <h3>💬 Lịch sử trò chuyện</h3>
+                <button id="new-chat-btn" class="new-chat-btn" title="Tạo cuộc trò chuyện mới">
+                    <span>➕</span>
+                </button>
+            </div>
+            
+            <div class="chat-controls">
+                <button id="clear-all-history" class="clear-history-btn" title="Xóa tất cả lịch sử">
+                    🗑️ Xóa tất cả
+                </button>
+            </div>
+            
+            <div class="conversations-list" id="conversations-list">
+                <!-- Danh sách cuộc trò chuyện sẽ được thêm vào đây -->
+                <div class="no-conversations">
+                    <p>Chưa có cuộc trò chuyện nào</p>
+                    <p>Bắt đầu chat để tạo lịch sử!</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>© Thư Viện AI</footer>
+    </aside>
+    <!-- Khu vực chat -->
+    <main class="chat-container">
+        <header class="chat-header">
+            <span>Trợ lý AI trong công việc</span>
+            <span id="loading" class="loading" style="display:none">Đang xử lý...</span>
+        </header>
+        <section id="chat-area" class="chat-area">
+            <!-- Welcome screen khi chưa có cuộc trò chuyện -->
+            <div id="welcome-screen" class="welcome-screen">
+                <div class="welcome-header">
+                    <div class="welcome-logo">
+                        <span class="logo-icon">🧠</span>
+                        <h1>Thư Viện AI</h1>
+                        <p class="tagline">Nền tảng AI đa năng với hơn 500+ Models</p>
+                    </div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card highlight">
+                        <div class="feature-icon">🚀</div>
+                        <h3>500+ AI Models</h3>
+                        <p>Truy cập hơn 500 mô hình AI từ OpenAI, Anthropic, Google, Chinese AI và nhiều nhà cung cấp hàng đầu</p>
+                        <div class="feature-stats">
+                            <span class="stat">✨ GPT-4, Claude, Gemini</span>
+                            <span class="stat">🎨 DALL-E, MidJourney, Flux</span>
+                            <span class="stat">🎵 Suno, Whisper, TTS</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3>Chat Thông Minh</h3>
+                        <p>Lưu trữ lịch sử cuộc trò chuyện, tìm kiếm models theo từ khóa, và quản lý nhiều cuộc hội thoại</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Lọc & Tìm Kiếm</h3>
+                        <p>Tìm kiếm models theo tên, phân loại theo nhà cung cấp, lọc theo tính năng (Text, Image, Audio, Video)</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Xử Lý Đa Dạng</h3>
+                        <p>Chế độ đơn lẻ, Ensemble (4 AI), hoặc Phân tán (28 AI) để có kết quả tối ưu nhất</p>
+                    </div>
+                </div>
+                
+                <div class="cta-section">
+                    <h2>Bắt đầu trò chuyện với AI ngay!</h2>
+                    <p>Chọn một AI model phù hợp và bắt đầu cuộc trò chuyện của bạn</p>
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="selectModel('gpt-4')">
+                            <span>🤖</span> GPT-4
+                        </button>
+                        <button class="quick-btn" onclick="selectModel('claude-3-5-sonnet-20241022')">
+                            <span>🧠</span> Claude 3.5
+                        </button>
+                        <button class="quick-btn" onclick="selectModel('gemini-1-5-pro')">
+                            <span>💎</span> Gemini Pro
+                        </button>
+                        <button class="quick-btn" onclick="selectModel('doubao-1-5-pro-256k-250115')">
+                            <span>🎯</span> Doubao Pro
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats-section">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">AI Models</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">28</div>
+                        <div class="stat-label">Nhà cung cấp</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Loại AI</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Hoạt động</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tin nhắn sẽ được thêm vào đây -->
+        </section>
+        <!-- Progress bar cho chế độ phân tán -->
+        <div id="progress-container" class="progress-container" style="display:none">
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <p id="progress-text">Đang xử lý...</p>
+        </div>
+
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="chat-input" placeholder="Nhập tin nhắn hoặc hỏi về tài liệu..." autocomplete="off"
+                required />
+            <button type="submit" id="send-btn">Gửi</button>
+        </form>
+    </main>
+    <!-- Thư viện xử lý tài liệu -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- Scripts của ứng dụng -->
+    <script src="config.js?v=3"></script>
+    <script src="script-backend.js?v=4"></script>
+    
+    <!-- Script load models từ Key4U API -->
+    <script>
+        // Load models từ Key4U API
+        // BACKEND_URL đã được khai báo trong script-backend.js
+        
+        async function loadModelsFromAPI() {
+            try {
+                console.log('🔄 Loading models from Key4U API...');
+                
+                const modelsUrl = window.CONFIG?.API?.url('MODELS') || (window.BACKEND_URL || window.CONFIG?.BACKEND_URL || window.location.origin) + '/api/models';
+                const response = await fetch(modelsUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    console.log('✅ Models loaded successfully from API');
+                    
+                    // Populate model select với tất cả models từ Key4U
+                    const modelSelect = document.getElementById('model-select');
+                    if (modelSelect) {
+                        // Clear existing options
+                        modelSelect.innerHTML = '';
+                        
+                        // Thêm models từ Key4U API
+                        const allModels = [];
+                        
+                        // Chat models
+                        if (data.data.key4u && data.data.key4u.chat) {
+                            data.data.key4u.chat.forEach(model => {
+                                allModels.push({
+                                    value: model,
+                                    text: `🤖 ${model}`,
+                                    type: 'chat'
+                                });
+                            });
+                        }
+                        
+                        // Image models
+                        if (data.data.key4u && data.data.key4u.image) {
+                            data.data.key4u.image.forEach(model => {
+                                allModels.push({
+                                    value: model,
+                                    text: `🎨 ${model}`,
+                                    type: 'image'
+                                });
+                            });
+                        }
+                        
+                        // Audio models
+                        if (data.data.key4u && data.data.key4u.audio) {
+                            data.data.key4u.audio.forEach(model => {
+                                allModels.push({
+                                    value: model,
+                                    text: `🎵 ${model}`,
+                                    type: 'audio'
+                                });
+                            });
+                        }
+                        
+                        // Video models
+                        if (data.data.key4u && data.data.key4u.video) {
+                            data.data.key4u.video.forEach(model => {
+                                allModels.push({
+                                    value: model,
+                                    text: `🎬 ${model}`,
+                                    type: 'video'
+                                });
+                            });
+                        }
+                        
+                        // Thêm models vào select
+                        allModels.forEach(model => {
+                            const option = document.createElement('option');
+                            option.value = model.value;
+                            option.textContent = model.text;
+                            option.dataset.type = model.type;
+                            modelSelect.appendChild(option);
+                        });
+                        
+                        // Set default model là Qwen (từ API data)
+                        if (data.data.default_chat_model) {
+                            const defaultModel = data.data.default_chat_model;
+                            for (let i = 0; i < modelSelect.options.length; i++) {
+                                if (modelSelect.options[i].value === defaultModel) {
+                                    modelSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        console.log(`✅ Loaded ${allModels.length} models from Key4U API`);
+                        
+                        // Update model count info
+                        updateModelCountInfo(allModels.length);
+                        
+                        // Trigger filter update
+                        if (typeof filterModels === 'function') {
+                            filterModels();
+                        }
+                    }
+                } else {
+                    throw new Error('Invalid API response format');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading models from API:', error);
+                
+                // Fallback: show error message
+                const modelSelect = document.getElementById('model-select');
+                if (modelSelect) {
+                    modelSelect.innerHTML = '<option disabled>❌ Lỗi tải models từ API</option>';
+                }
+            }
+        }
+        
+        function updateModelCountInfo(totalCount) {
+            const totalModelsElement = document.querySelector('.total-models');
+            const filteredModelsElement = document.querySelector('.filtered-models');
+            
+            if (totalModelsElement) {
+                totalModelsElement.textContent = `Tổng: ${totalCount} models`;
+            }
+            if (filteredModelsElement) {
+                filteredModelsElement.textContent = `Hiển thị: ${totalCount} models`;
+            }
+        }
+        
+        // Load models khi DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load models từ API sau khi trang load
+            setTimeout(() => {
+                loadModelsFromAPI();
+            }, 1000);
+        });
+    </script>
+    
+    <!-- Script quản lý trạng thái đăng nhập -->
+    <script>
+        // Function logout - phải được định nghĩa ở global scope
+        function logout() {
+            // Xóa dữ liệu user khỏi localStorage
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user_token');
+            localStorage.removeItem('user_data');
+            localStorage.removeItem('userData');
+            
+            // Xóa lịch sử chat khỏi localStorage
+            localStorage.removeItem('chat_conversations');
+            
+            // Xóa currentUser và conversations nếu có trong script-backend.js
+            if (typeof currentUser !== 'undefined') {
+                currentUser = null;
+            }
+            if (typeof conversations !== 'undefined') {
+                conversations = [];
+            }
+            if (typeof currentConversation !== 'undefined') {
+                currentConversation = null;
+            }
+            
+            // Xóa tất cả messages trong chat-area (chỉ xóa div.message, giữ lại welcome-screen)
+            const chatArea = document.getElementById('chat-area');
+            if (chatArea) {
+                // Xóa tất cả các div.message
+                const messages = chatArea.querySelectorAll('.message');
+                messages.forEach(msg => msg.remove());
+                
+                // Xóa class has-messages để hiển thị lại welcome screen
+                chatArea.classList.remove('has-messages');
+                
+                // Đảm bảo welcome-screen được hiển thị
+                const welcomeScreen = document.getElementById('welcome-screen');
+                if (welcomeScreen) {
+                    welcomeScreen.style.display = 'block';
+                }
+            }
+            
+            // Hiển thị lại section đăng nhập/đăng ký
+            showAuthSection();
+            
+            // Thông báo đăng xuất thành công
+            alert('Đăng xuất thành công!');
+            
+            // Reload trang để đảm bảo trạng thái được cập nhật
+            window.location.reload();
+        }
+
+        // Kiểm tra trạng thái đăng nhập khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM Content Loaded, checking login status...');
+            checkLoginStatus();
+            
+            // Force check lại sau 1 giây để đảm bảo
+            setTimeout(() => {
+                console.log('🔄 Force checking login status after 1 second...');
+                checkLoginStatus();
+            }, 1000);
+        });
+
+        async function checkLoginStatus() {
+            console.log('🔍 Checking login status...');
+            const userData = localStorage.getItem('user');
+            const authSection = document.getElementById('auth-section');
+            const userSection = document.getElementById('user-section');
+            
+            console.log('User data from localStorage:', userData);
+            console.log('Auth section element:', authSection);
+            console.log('User section element:', userSection);
+            
+            // Kiểm tra userData hợp lệ (không phải null, undefined, hoặc "undefined")
+            if (userData && userData !== 'null' && userData !== 'undefined' && userData.trim() !== '') {
+                // User đã đăng nhập
+                try {
+                    const user = JSON.parse(userData);
+                    console.log('Parsed user data:', user);
+                    
+                    // Ẩn section đăng nhập/đăng ký
+                    if (authSection) {
+                        authSection.style.display = 'none';
+                        console.log('✅ Hidden auth section');
+                    }
+                    
+                    // Hiện section user
+                    if (userSection) {
+                        userSection.style.display = 'block';
+                        console.log('✅ Shown user section');
+                        
+                        // Cập nhật thông tin user
+                        const userNameElement = document.getElementById('user-name');
+                        const userCreditsElement = document.getElementById('user-credits');
+                        
+                        console.log('User name element:', userNameElement);
+                        console.log('User credits element:', userCreditsElement);
+                        
+                        if (userNameElement) {
+                            userNameElement.textContent = user.username || 'User';
+                            console.log('✅ Updated user name to:', user.username);
+                        }
+                        
+                        if (userCreditsElement) {
+                            userCreditsElement.textContent = (user.credits || 0) + ' credits';
+                            console.log('✅ Updated user credits to:', user.credits || 0);
+                        }
+
+                        // Thử làm mới credits từ API profile nếu có token
+                        try {
+                            const token = localStorage.getItem('token');
+                            if (token) {
+                            const profileUrl = window.CONFIG?.API?.url('USER_PROFILE') || (window.BACKEND_URL || window.CONFIG?.BACKEND_URL || window.location.origin) + '/api/user/profile';
+                            const res = await fetch(profileUrl, {
+                                headers: { 'Authorization': 'Bearer ' + token }
+                            });
+
+                            if (res.status === 401) {
+                                console.warn('Token hết hạn hoặc không hợp lệ, xóa localStorage và hiển thị lại form đăng nhập.');
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('user');
+                                localStorage.removeItem('user_data');
+                                showAuthSection();
+                                return;
+                            }
+                                const payload = await res.json().catch(()=>null);
+                                if (res.ok && payload && payload.success && payload.data && payload.data.user) {
+                                    const freshUser = payload.data.user;
+                                    localStorage.setItem('user', JSON.stringify(freshUser));
+                                    if (userCreditsElement) {
+                                        userCreditsElement.textContent = (freshUser.credits || 0) + ' credits';
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            console.debug('Skip refresh profile:', e?.message);
+                        }
+                        
+                        // Load lịch sử chat sau khi đăng nhập thành công
+                        try {
+                            if (typeof loadConversations === 'function') {
+                                console.log('🔄 Loading chat history after login...');
+                                loadConversations();
+                            } else {
+                                console.log('⚠️ loadConversations function not available yet, retrying...');
+                                // Thử lại sau một chút nếu script-backend.js chưa load xong
+                                setTimeout(() => {
+                                    if (typeof loadConversations === 'function') {
+                                        console.log('🔄 Retrying load chat history...');
+                                        loadConversations();
+                                    }
+                                }, 1000);
+                            }
+                        } catch (e) {
+                            console.debug('Skip load chat history:', e?.message);
+                        }
+                    } else {
+                        console.error('❌ User section element not found!');
+                    }
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    // Nếu có lỗi, hiển thị lại section đăng nhập
+                    showAuthSection();
+                }
+            } else {
+                // User chưa đăng nhập
+                console.log('❌ No user data found, showing auth section');
+                showAuthSection();
+            }
+        }
+
+        function showAuthSection() {
+            const authSection = document.getElementById('auth-section');
+            const userSection = document.getElementById('user-section');
+            
+            if (authSection) {
+                authSection.style.display = 'block';
+            }
+            
+            if (userSection) {
+                userSection.style.display = 'none';
+            }
+        }
+
+        // Lắng nghe sự kiện storage để cập nhật khi đăng nhập từ tab khác
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'user') {
+                console.log('🔄 User data changed, updating login status...');
+                checkLoginStatus();
+            }
+        });
+
+        // Kiểm tra lại khi trang được focus (trường hợp chuyển từ tab khác)
+        window.addEventListener('focus', function() {
+            console.log('🔄 Page focused, checking login status...');
+            checkLoginStatus();
+        });
+
+        // Làm mới credits định kỳ
+        setInterval(() => {
+            checkLoginStatus();
+        }, 60000);
+
+        // Kiểm tra lại sau khi chuyển trang (trường hợp từ login)
+        window.addEventListener('pageshow', function() {
+            console.log('🔄 Page shown, checking login status...');
+            checkLoginStatus();
+        });
+
+        // Global function for testing login status
+        window.testLoginStatus = function() {
+            console.log('🧪 Manual test login status...');
+            checkLoginStatus();
+        };
+
+        // Global function for testing localStorage
+        window.testLocalStorage = function() {
+            console.log('🧪 Testing localStorage...');
+            console.log('User data:', localStorage.getItem('user'));
+            console.log('Token data:', localStorage.getItem('token'));
+        };
+
+        // Global function for simulating login
+        window.simulateLogin = function() {
+            console.log('🧪 Simulating login...');
+            const testUser = {
+                id: 1,
+                username: 'testuser',
+                email: 'test@example.com',
+                role: 'user',
+                credits: 100
+            };
+            localStorage.setItem('user', JSON.stringify(testUser));
+            localStorage.setItem('token', 'test_token_123');
+            checkLoginStatus();
+        };
+
+        // Global function for clearing localStorage
+        window.clearStorage = function() {
+            console.log('🧹 Clearing localStorage...');
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            checkLoginStatus();
+        };
+
+        // Global function for fixing localStorage
+        window.fixStorage = function() {
+            console.log('🔧 Fixing localStorage...');
+            // Xóa các giá trị không hợp lệ
+            if (localStorage.getItem('user') === 'undefined' || localStorage.getItem('user') === 'null') {
+                localStorage.removeItem('user');
+            }
+            if (localStorage.getItem('token') === 'undefined' || localStorage.getItem('token') === 'null') {
+                localStorage.removeItem('token');
+            }
+            checkLoginStatus();
+        };
+
+        // Global function for search suggestions
+        function selectSuggestion(suggestion) {
+            const searchInput = document.getElementById('model-search');
+            if (searchInput) searchInput.value = suggestion;
+            document.getElementById('search-suggestions').style.display = 'none';
+            // Trigger filter function if available
+            if (typeof filterModels === 'function') {
+                filterModels();
+            }
+        }
+
+        // === TÌM KIẾM VÀ PROVIDER LIST ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('model-search');
+            const modelSelect = document.getElementById('model-select');
+            
+            // Provider list elements
+            const providerList = document.getElementById('provider-list');
+            const providerOptions = providerList.querySelectorAll('.provider-option');
+            
+            let selectedCategory = '';
+            
+            // Enhanced filters elements
+            const sortSelect = document.getElementById('sort-select');
+            const resetFiltersBtn = document.getElementById('reset-filters-btn');
+            const searchSuggestions = document.getElementById('search-suggestions');
+            const modelCountInfo = document.getElementById('model-count-info');
+            const filterStatusElement = document.getElementById('current-filter-status');
+            const filterCheckboxes = {
+                text: document.getElementById('filter-text'),
+                image: document.getElementById('filter-image'),
+                audio: document.getElementById('filter-audio'),
+                video: document.getElementById('filter-video')
+            };
+            
+            // Lưu tất cả options gốc và thống kê
+            const allOptions = Array.from(modelSelect.options);
+            let originalOptions = [...allOptions];
+            
+            // ===== PROVIDER MAPPING - Tối ưu logic lọc =====
+            const providerMappings = {
+                'openai': {
+                    keywords: ['gpt', 'dall', 'whisper', 'tts', 'o1', 'o3', 'o4', 'openai', 'chatgpt', 'text-', 'babbage', 'ada', 'davinci', 'curie'],
+                    providerName: 'OpenAI'
+                },
+                'openai-plus': {
+                    keywords: ['gpt-4', 'gpt-5', 'o1', 'o3', 'o4', 'plus'],
+                    providerName: 'OpenAI Plus'
+                },
+                'claude': {
+                    keywords: ['claude', 'anthropic'],
+                    providerName: 'Anthropic'
+                },
+                'google': {
+                    keywords: ['gemini', 'palm', 'bard', 'imagen', 'veo', 'google'],
+                    providerName: 'Google'
+                },
+                'chinese': {
+                    keywords: ['qwen', 'ernie', 'doubao', 'glm', 'hunyuan', 'yi', 'deepseek', 'kimi', 'baichuan', 'chatglm', 'zhipu', 'moonshot', 'internlm', 'spark', 'sensetime', 'minimax', '360', 'step', 'abab', 'skylark', 'chinese'],
+                    providerName: 'Chinese AI'
+                },
+                'image': {
+                    keywords: ['dall', 'flux', 'stable', 'midjourney', 'imagen', 'ideogram', 'recraft', 'image', 'ảnh', 'playground', 'leonardo', 'firefly', 'kandinsky', 'wuerstchen', 'sdxl', 'sd-', 'artistic', 'draw'],
+                    providerName: 'Image AI'
+                },
+                'audio': {
+                    keywords: ['whisper', 'tts', 'suno', 'riffusion', 'audio', 'speech', 'bark', 'musicgen', 'audiogen', 'elevenlabs', 'voice', 'sound'],
+                    providerName: 'Audio AI'
+                },
+                'video': {
+                    keywords: ['video', 'luma', 'runway', 'kling', 'minimax', 'veo', 'pika', 'gen-', 'synthesia', 'd-id', 'pictory', 'animatediff', 'zeroscope'],
+                    providerName: 'Video AI'
+                },
+                'siliconflow': {
+                    keywords: ['siliconflow'],
+                    providerName: 'SiliconFlow'
+                },
+                'deepseek': {
+                    keywords: ['deepseek'],
+                    providerName: 'DeepSeek'
+                },
+                'doubao': {
+                    keywords: ['doubao'],
+                    providerName: 'Doubao'
+                }
+            };
+            
+            // Vietnamese search mappings
+            const vietnameseSearchMap = {
+                'gpt': 'gpt',
+                'claude': 'claude',
+                'gemini': 'gemini',
+                'ảnh': ['dall', 'flux', 'stable'],
+                'âm thanh': ['whisper', 'tts', 'suno'],
+                'video': ['video', 'luma', 'runway']
+            };
+            
+            // ===== CACHE PROVIDER & MODEL TYPE - Tối ưu hiệu năng =====
+            const optionCache = new Map();
+            
+            // Thứ tự ưu tiên: Provider cụ thể trước, category chung sau
+            const providerPriority = [
+                'openai-plus', // Special case - check trước openai
+                'openai', 'claude', 'google', 'chinese', 
+                'deepseek', 'doubao', 'siliconflow', // Provider cụ thể
+                'image', 'video', 'audio' // Category chung sau cùng
+            ];
+            
+            allOptions.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                const value = option.value.toLowerCase();
+                
+                // Cache provider - kiểm tra theo thứ tự ưu tiên
+                let provider = null;
+                
+                // Xử lý special cases trước - models có thể thuộc nhiều category
+                // "imagen" và "veo" là Google models, không phải Image/Video category
+                const specialGoogleKeywords = ['imagen', 'veo', 'gemini', 'palm', 'bard', 'google'];
+                const isGoogleModel = specialGoogleKeywords.some(keyword => 
+                    value.includes(keyword) || text.includes(keyword)
+                );
+                
+                if (isGoogleModel) {
+                    provider = 'google';
+                } else {
+                    // Kiểm tra theo thứ tự ưu tiên
+                    for (const key of providerPriority) {
+                        const mapping = providerMappings[key];
+                        if (mapping && mapping.keywords.some(keyword => {
+                            // Exact match hoặc contains
+                            return value.includes(keyword) || text.includes(keyword);
+                        })) {
+                            provider = key;
+                            break;
+                        }
+                    }
+                    
+                    // Nếu không tìm thấy trong priority list, kiểm tra các provider còn lại
+                    if (!provider) {
+                        for (const [key, mapping] of Object.entries(providerMappings)) {
+                            if (!providerPriority.includes(key) && 
+                                mapping.keywords.some(keyword => value.includes(keyword) || text.includes(keyword))) {
+                                provider = key;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if (!provider) provider = 'other';
+                
+                // Cache model type
+                let modelType = 'text';
+                if (text.includes('dall') || text.includes('flux') || text.includes('stable') || text.includes('image') || value.includes('image')) {
+                    modelType = 'image';
+                } else if (text.includes('whisper') || text.includes('tts') || text.includes('suno') || text.includes('audio') || value.includes('audio')) {
+                    modelType = 'audio';
+                } else if (text.includes('kling') || text.includes('veo') || text.includes('video') || value.includes('video')) {
+                    modelType = 'video';
+                }
+                
+                optionCache.set(option, { provider, modelType, text, value });
+            });
+            
+            // Debounce function for search input
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            // Cập nhật số lượng models cho mỗi provider
+            updateProviderCounts();
+            
+            // ===== KHỞI TẠO MẶC ĐỊNH - Không lọc gì cả, hiển thị tất cả models =====
+            // Đảm bảo tất cả filters ở trạng thái mặc định
+            selectedCategory = ''; // Chọn "Tất cả providers"
+            
+            // Đảm bảo tất cả checkboxes đều được check (hiển thị tất cả types)
+            Object.values(filterCheckboxes).forEach(checkbox => {
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+            
+            // Đảm bảo search input rỗng
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            
+            // Đảm bảo provider "Tất cả providers" được active
+            if (providerOptions.length > 0) {
+                providerOptions.forEach(opt => opt.classList.remove('active'));
+                providerOptions[0].classList.add('active'); // Provider đầu tiên là "Tất cả providers"
+            }
+            
+            // Reset sort về mặc định
+            if (sortSelect) {
+                sortSelect.value = 'default';
+            }
+            
+            // Hiển thị tất cả models mặc định (không lọc gì cả)
+            filterModels();
+            updateFilterStatus();
+            updateModelCount();
+            
+            // Tạo global function để user có thể test
+            window.testOpenAI = () => {
+                console.log('🧪 Manual OpenAI test...');
+                testProviderFiltering('openai');
+            };
+            
+            window.testAll = () => {
+                console.log('🧪 Show all models...');
+                testProviderFiltering('');
+            };
+            
+            window.testSearch = (term) => {
+                console.log('� Testing search for:', term);
+                if (searchInput) searchInput.value = term;
+                filterModels();
+            };
+            
+            console.log('�💡 Try: testOpenAI(), testAll(), or testSearch("gpt") in console');
+            console.log('📝 Test function: testProviderFiltering("provider-name")');
+            
+            // === PROVIDER LIST FUNCTIONALITY ===
+            
+            // Handle provider option selection
+            providerOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Remove active class from all options
+                    providerOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Update selected category
+                    selectedCategory = this.getAttribute('data-value');
+                    console.log('Selected provider:', selectedCategory);
+                    
+                    // Update filter status display
+                    updateFilterStatus();
+                    
+                    // Filter models immediately
+                    filterModels();
+                });
+            });
+            
+            // === ENHANCED FILTERS FUNCTIONALITY ===
+            
+            // Initialize model count and debug categories
+            updateModelCount();
+            
+            // Debug model categories on load
+            setTimeout(() => {
+                const categories = debugModelCategories();
+                
+                // Update provider labels with counts
+                providerOptions.forEach(option => {
+                    const providerValue = option.getAttribute('data-value');
+                    const providerNameEl = option.querySelector('.provider-name');
+                    
+                    if (providerValue === '') {
+                        providerNameEl.textContent = `Tất cả providers (${allOptions.length})`;
+                    } else if (providerValue === 'openai') {
+                        providerNameEl.textContent = `OpenAI (${categories.OpenAI.length})`;
+                    } else if (providerValue === 'claude') {
+                        providerNameEl.textContent = `Anthropic (${categories.Anthropic.length})`;
+                    } else if (providerValue === 'google') {
+                        providerNameEl.textContent = `Google (${categories.Google.length})`;
+                    } else if (providerValue === 'chinese') {
+                        providerNameEl.textContent = `Chinese AI (${categories.Chinese.length})`;
+                    } else if (providerValue === 'image') {
+                        providerNameEl.textContent = `Image AI (${categories.Image.length})`;
+                    } else if (providerValue === 'video') {
+                        providerNameEl.textContent = `Video AI (${categories.Video.length})`;
+                    } else if (providerValue === 'siliconflow') {
+                        providerNameEl.textContent = `SiliconFlow (${categories.SiliconFlow.length})`;
+                    } else if (providerValue === 'other') {
+                        providerNameEl.textContent = `Khác (${categories.Other.length})`;
+                    }
+                });
+            }, 500);
+            
+            // Search suggestions
+            if (searchInput) {
+                searchInput.addEventListener('focus', function() {
+                    showSearchSuggestions();
+                });
+                
+                searchInput.addEventListener('blur', function() {
+                    setTimeout(() => {
+                        hideSearchSuggestions();
+                    }, 200);
+                });
+            }
+            
+            function showSearchSuggestions() {
+                const currentValue = searchInput ? searchInput.value.toLowerCase() : '';
+                const suggestions = popularSearches.filter(search => 
+                    search.toLowerCase().includes(currentValue) || currentValue === ''
+                );
+                
+                if (suggestions.length > 0) {
+                    searchSuggestions.innerHTML = suggestions.map(suggestion => 
+                        `<div class="suggestion-item" onclick="selectSuggestion('${suggestion}')">${suggestion}</div>`
+                    ).join('');
+                    searchSuggestions.style.display = 'block';
+                }
+            }
+            
+            function hideSearchSuggestions() {
+                searchSuggestions.style.display = 'none';
+            }
+            
+            function selectSuggestion(suggestion) {
+                if (searchInput) searchInput.value = suggestion;
+                hideSearchSuggestions();
+                filterModels();
+            }
+            
+            // Sort functionality
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    sortModels(this.value);
+                });
+            }
+            
+            // Reset filters
+            if (resetFiltersBtn) {
+                resetFiltersBtn.addEventListener('click', function() {
+                    if (searchInput) searchInput.value = '';
+                    if (sortSelect) sortSelect.value = 'default';
+                selectedCategory = '';
+                
+                // Reset provider selection
+                providerOptions.forEach(opt => opt.classList.remove('active'));
+                providerOptions[0].classList.add('active'); // Select "Tất cả providers"
+                
+                // Reset checkboxes
+                Object.values(filterCheckboxes).forEach(checkbox => {
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                
+                // Reset models
+                modelSelect.innerHTML = '';
+                originalOptions.forEach(option => {
+                    modelSelect.appendChild(option.cloneNode(true));
+                });
+                
+                // Update status and count
+                updateFilterStatus();
+                updateModelCount();
+                updateProviderCounts(); // Reset về số lượng gốc
+                
+                // Reset dynamic counts to show all models
+                updateDynamicProviderCounts(originalOptions);
+                });
+            }
+            
+            // Checkbox filters
+            Object.values(filterCheckboxes).forEach(checkbox => {
+                if (checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        filterModels();
+                        updateFilterStatus();
+                    });
+                }
+            });
+            
+            function updateModelCount() {
+                const totalModels = allOptions.length;
+                const visibleModels = modelSelect.options.length;
+                
+                const totalModelsElement = document.querySelector('.total-models');
+                const filteredModelsElement = document.querySelector('.filtered-models');
+                
+                if (totalModelsElement) {
+                    totalModelsElement.textContent = `Tổng: ${totalModels} models`;
+                }
+                if (filteredModelsElement) {
+                    filteredModelsElement.textContent = `Hiển thị: ${visibleModels} models`;
+                }
+            }
+            
+            function updateFilterStatus() {
+                const activeProvider = document.querySelector('.provider-option.active');
+                const searchTerm = searchInput ? searchInput.value.trim() : '';
+                const hasTypeFilter = !filterCheckboxes.text?.checked || !filterCheckboxes.image?.checked || 
+                                     !filterCheckboxes.audio?.checked || !filterCheckboxes.video?.checked;
+                
+                let statusText = '';
+                
+                if (activeProvider) {
+                    const providerNameElement = activeProvider.querySelector('.provider-name');
+                    const providerIconElement = activeProvider.querySelector('.provider-icon');
+                    const providerCountElement = activeProvider.querySelector('.provider-count');
+                    
+                    const providerName = providerNameElement ? providerNameElement.textContent : '';
+                    const providerIcon = providerIconElement ? providerIconElement.textContent : '';
+                    const providerCount = providerCountElement ? providerCountElement.textContent : '';
+                    
+                    if (selectedCategory === '') {
+                        statusText = `📋 Đang hiển thị: Tất cả models`;
+                    } else {
+                        statusText = `${providerIcon} Đang lọc: ${providerName} ${providerCount}`;
+                    }
+                    
+                    if (searchTerm) {
+                        statusText += ` | 🔍 Tìm: "${searchTerm}"`;
+                    }
+                    
+                    if (hasTypeFilter) {
+                        statusText += ` | 🎛️ Có bộ lọc loại`;
+                    }
+                } else {
+                    statusText = '📋 Đang hiển thị: Tất cả models';
+                }
+                
+                filterStatusElement.innerHTML = `<span>${statusText}</span>`;
+            }
+            
+            function sortModels(sortType) {
+                const currentOptions = Array.from(modelSelect.options);
+                let sortedOptions;
+                
+                switch(sortType) {
+                    case 'name-asc':
+                        sortedOptions = currentOptions.sort((a, b) => 
+                            a.textContent.localeCompare(b.textContent)
+                        );
+                        break;
+                    case 'name-desc':
+                        sortedOptions = currentOptions.sort((a, b) => 
+                            b.textContent.localeCompare(a.textContent)
+                        );
+                        break;
+                    case 'provider':
+                        sortedOptions = currentOptions.sort((a, b) => {
+                            const aProvider = getProviderFromOption(a);
+                            const bProvider = getProviderFromOption(b);
+                            return aProvider.localeCompare(bProvider);
+                        });
+                        break;
+                    default:
+                        sortedOptions = currentOptions.sort((a, b) => {
+                            const aIndex = originalOptions.findIndex(opt => opt.value === a.value);
+                            const bIndex = originalOptions.findIndex(opt => opt.value === b.value);
+                            return aIndex - bIndex;
+                        });
+                }
+                
+                // Clear and re-add sorted options
+                modelSelect.innerHTML = '';
+                sortedOptions.forEach(option => {
+                    modelSelect.appendChild(option);
+                });
+            }
+            
+            function getProviderFromOption(option) {
+                // Sử dụng cache nếu có
+                const cached = optionCache.get(option);
+                if (cached && cached.provider) {
+                    // Convert provider key to display name
+                    return providerMappings[cached.provider]?.providerName || 'Other';
+                }
+                
+                // Fallback nếu không có cache (tương thích ngược)
+                const text = option.textContent.toLowerCase();
+                const value = option.value.toLowerCase();
+                
+                // Kiểm tra theo thứ tự ưu tiên - khớp với logic filtering
+                if (value.includes('gpt') || value.includes('dall') || value.includes('whisper') || 
+                    value.includes('tts') || value.includes('o1') || value.includes('o3') || 
+                    value.includes('o4') || text.includes('openai') || value.includes('chatgpt') ||
+                    value.includes('text-') || value.includes('babbage') || value.includes('ada') ||
+                    value.includes('davinci') || value.includes('curie')) return 'OpenAI';
+                    
+                if (value.includes('claude') || text.includes('anthropic')) return 'Anthropic';
+                
+                if (value.includes('gemini') || value.includes('palm') || value.includes('bard') || 
+                    value.includes('imagen') || value.includes('veo') || text.includes('google')) return 'Google';
+                    
+                if (value.includes('qwen') || value.includes('ernie') || value.includes('doubao') || 
+                    value.includes('glm') || value.includes('hunyuan') || value.includes('yi') || 
+                    value.includes('deepseek') || value.includes('kimi') || value.includes('baichuan') ||
+                    value.includes('chatglm') || value.includes('zhipu') || value.includes('moonshot') ||
+                    value.includes('internlm') || value.includes('spark') || value.includes('sensetime') ||
+                    value.includes('minimax') || value.includes('360') || value.includes('step') ||
+                    value.includes('abab') || value.includes('skylark') || text.includes('chinese')) return 'Chinese';
+                    
+                if (value.includes('flux') || value.includes('stable') || value.includes('midjourney') || 
+                    value.includes('ideogram') || value.includes('recraft') || text.includes('image') ||
+                    value.includes('playground') || value.includes('leonardo') || value.includes('firefly') ||
+                    value.includes('kandinsky') || value.includes('wuerstchen') || value.includes('sdxl') ||
+                    value.includes('sd-') || value.includes('artistic') || value.includes('draw')) return 'Image';
+                    
+                if (value.includes('whisper') || value.includes('tts') || value.includes('suno') || 
+                    value.includes('riffusion') || text.includes('audio') || text.includes('speech') ||
+                    value.includes('bark') || value.includes('musicgen') || value.includes('audiogen') ||
+                    value.includes('elevenlabs') || value.includes('voice') || value.includes('sound')) return 'Audio';
+                    
+                if (value.includes('video') || value.includes('luma') || value.includes('runway') || 
+                    value.includes('kling') || value.includes('minimax') || value.includes('veo') || 
+                    value.includes('pika') || text.includes('video') || value.includes('gen-') ||
+                    value.includes('synthesia') || value.includes('d-id') || value.includes('pictory') ||
+                    value.includes('animatediff') || value.includes('zeroscope')) return 'Video';
+                    
+                if (text.includes('siliconflow') || value.includes('siliconflow')) return 'SiliconFlow';
+                
+                return 'Other';
+            }
+            
+            // Hàm debug riêng cho OpenAI models
+            function debugOpenAIModels() {
+                const openaiModels = [];
+                const openaiPlusModels = [];
+                const unrecognizedModels = [];
+                
+                allOptions.forEach(option => {
+                    const provider = getProviderFromOption(option);
+                    const text = option.textContent.toLowerCase();
+                    const value = option.value.toLowerCase();
+                    
+                    // Kiểm tra xem có phải OpenAI model không bằng các keyword
+                    const looksLikeOpenAI = text.includes('gpt') || text.includes('openai') || 
+                                          text.includes('dall') || text.includes('whisper') ||
+                                          text.includes('chatgpt') || value.includes('gpt') ||
+                                          value.includes('o1-') || value.includes('o3-') ||
+                                          value.includes('text-') || text.includes('davinci');
+                    
+                    if (provider === 'OpenAI') {
+                        openaiModels.push({
+                            name: option.textContent,
+                            value: option.value,
+                            isPlus: value.includes('gpt-4') || value.includes('o1') || value.includes('o3') || value.includes('o4')
+                        });
+                        
+                        if (value.includes('gpt-4') || value.includes('o1') || value.includes('o3') || value.includes('o4')) {
+                            openaiPlusModels.push(option.textContent);
+                        }
+                    } else if (looksLikeOpenAI) {
+                        // Models trông giống OpenAI nhưng không được phân loại vào OpenAI
+                        unrecognizedModels.push({
+                            name: option.textContent,
+                            value: option.value,
+                            classified: provider
+                        });
+                    }
+                });
+                
+                console.log('=== OPENAI DEBUG ===');
+                console.log('Tổng OpenAI models:', openaiModels.length);
+                console.log('OpenAI Plus models:', openaiPlusModels.length);
+                console.log('OpenAI thường:', openaiModels.length - openaiPlusModels.length);
+                console.log('Models trông như OpenAI nhưng không được phân loại:', unrecognizedModels.length);
+                if (unrecognizedModels.length > 0) {
+                    console.log('Unrecognized OpenAI-like models:', unrecognizedModels.slice(0, 5));
+                }
+                console.log('OpenAI models sample:', openaiModels.slice(0, 5));
+                
+                return {
+                    total: openaiModels.length,
+                    plus: openaiPlusModels.length,
+                    regular: openaiModels.length - openaiPlusModels.length,
+                    unrecognized: unrecognizedModels.length
+                };
+            }
+            
+            // Hàm để debug và kiểm tra phân loại models - Sử dụng cache trực tiếp
+            function debugModelCategories() {
+                const categories = {
+                    'OpenAI': [],
+                    'Anthropic': [], 
+                    'Google': [],
+                    'Chinese': [],
+                    'Image': [],
+                    'Audio': [],
+                    'Video': [],
+                    'SiliconFlow': [],
+                    'Other': []
+                };
+                
+                // Map provider keys to display names
+                const providerKeyToDisplayName = {
+                    'openai': 'OpenAI',
+                    'openai-plus': 'OpenAI', // OpenAI Plus models go to OpenAI
+                    'claude': 'Anthropic',
+                    'google': 'Google',
+                    'chinese': 'Chinese',
+                    'image': 'Image',
+                    'audio': 'Audio',
+                    'video': 'Video',
+                    'siliconflow': 'SiliconFlow',
+                    'deepseek': 'Chinese', // DeepSeek is Chinese AI
+                    'doubao': 'Chinese', // Doubao is Chinese AI
+                    'other': 'Other'
+                };
+                
+                allOptions.forEach(option => {
+                    // Sử dụng cache trực tiếp thay vì getProviderFromOption()
+                    const cached = optionCache.get(option);
+                    if (cached && cached.provider) {
+                        const displayName = providerKeyToDisplayName[cached.provider] || 'Other';
+                        if (categories[displayName]) {
+                            categories[displayName].push(option.textContent);
+                        } else {
+                            categories.Other.push(option.textContent);
+                        }
+                    } else {
+                        // Fallback nếu không có cache
+                        const provider = getProviderFromOption(option);
+                        if (categories[provider]) {
+                            categories[provider].push(option.textContent);
+                        } else {
+                            categories.Other.push(option.textContent);
+                        }
+                    }
+                });
+                
+                console.log('Model categories:', categories);
+                console.log('Other models count:', categories.Other.length);
+                if (categories.Other.length > 0) {
+                    console.log('Other models:', categories.Other.slice(0, 10)); // Show first 10
+                }
+                
+                return categories;
+            }
+            
+            // Hàm cập nhật số lượng models cho mỗi provider - Fixed counts
+            function updateProviderCounts() {
+                // Số lượng cố định theo thống kê thực tế
+                const fixedCounts = {
+                    'all': 833, // Tổng tất cả models
+                    'openai': 147,
+                    'openai-plus': 107,
+                    'claude': 19,
+                    'google': 31,
+                    'image': 95,
+                    'chinese': 183,
+                    'deepseek': 5,
+                    'video': 30,
+                    'siliconflow': 0,
+                    'doubao': 30,
+                    'other': 86
+                };
+                
+                // Cập nhật UI với số lượng cố định - với null check
+                const elements = [
+                    { id: 'count-all', value: fixedCounts.all },
+                    { id: 'count-openai', value: fixedCounts.openai },
+                    { id: 'count-openai-plus', value: fixedCounts['openai-plus'] },
+                    { id: 'count-claude', value: fixedCounts.claude },
+                    { id: 'count-google', value: fixedCounts.google },
+                    { id: 'count-image', value: fixedCounts.image },
+                    { id: 'count-chinese', value: fixedCounts.chinese },
+                    { id: 'count-deepseek', value: fixedCounts.deepseek },
+                    { id: 'count-video', value: fixedCounts.video },
+                    { id: 'count-siliconflow', value: fixedCounts.siliconflow },
+                    { id: 'count-doubao', value: fixedCounts.doubao },
+                    { id: 'count-other', value: fixedCounts.other }
+                ];
+                
+                elements.forEach(({ id, value }) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = `(${value})`;
+                    } else {
+                        console.warn(`Element with id '${id}' not found`);
+                    }
+                });
+                
+                // Cập nhật thống kê nổi bật
+                const totalModelsElement = document.getElementById('total-models-display');
+                const filteredModelsElement = document.getElementById('filtered-models-display');
+                
+                if (totalModelsElement) {
+                    totalModelsElement.textContent = `${fixedCounts.all} models`;
+                }
+                if (filteredModelsElement) {
+                    filteredModelsElement.textContent = `${fixedCounts.all} models`;
+                }
+                
+                console.log('🎯 Provider counts (fixed):', fixedCounts);
+            }
+            
+            // Hàm test filtering - gọi từ console
+            function testProviderFiltering(providerValue) {
+                console.log('🧪 Testing provider filtering:', providerValue);
+                
+                // Reset tất cả providers
+                providerOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // Tìm và active provider được chọn
+                const targetProvider = Array.from(providerOptions).find(opt => 
+                    opt.getAttribute('data-value') === providerValue
+                );
+                
+                if (targetProvider) {
+                    targetProvider.classList.add('active');
+                    selectedCategory = providerValue;
+                    
+                    const providerNameElement = targetProvider.querySelector('.provider-name');
+                    console.log('✅ Activated provider:', providerNameElement ? providerNameElement.textContent : 'Unknown');
+                    
+                    // Trigger filtering
+                    filterModels();
+                    updateFilterStatus();
+                    
+                    // Log results
+                    setTimeout(() => {
+                        const resultCount = modelSelect.options.length;
+                        console.log('📊 Results:', resultCount, 'models found');
+                    }, 100);
+                } else {
+                    console.log('❌ Provider not found:', providerValue);
+                }
+            }
+            
+            // Hàm cập nhật số lượng models dựa trên kết quả filtering hiện tại - Tối ưu với cache
+            function updateDynamicProviderCounts(filteredOptions) {
+                const counts = {
+                    'openai': 0,
+                    'openai-plus': 0,
+                    'claude': 0,
+                    'google': 0,
+                    'image': 0,
+                    'chinese': 0,
+                    'deepseek': 0,
+                    'video': 0,
+                    'siliconflow': 0,
+                    'doubao': 0,
+                    'other': 0
+                };
+                
+                let totalCount = filteredOptions.length;
+                
+                filteredOptions.forEach(option => {
+                    const cached = optionCache.get(option);
+                    if (!cached) return;
+                    
+                    const { provider, value } = cached;
+                    
+                    // Map provider categories to UI values - Sử dụng cache
+                    if (provider === 'openai') {
+                        counts['openai']++; // Tất cả models OpenAI
+                        // Riêng các models cao cấp cũng được tính vào OpenAI Plus
+                        if (value.includes('gpt-4') || value.includes('gpt-5') || 
+                            value.includes('o1') || value.includes('o3') || value.includes('o4')) {
+                            counts['openai-plus']++;
+                        }
+                    } else if (provider === 'claude') {
+                        counts['claude']++;
+                    } else if (provider === 'google') {
+                        counts['google']++;
+                    } else if (provider === 'chinese') {
+                        if (value.includes('deepseek')) {
+                            counts['deepseek']++;
+                        } else if (value.includes('doubao')) {
+                            counts['doubao']++;
+                        } else {
+                            counts['chinese']++;
+                        }
+                    } else if (provider === 'image') {
+                        counts['image']++;
+                    } else if (provider === 'audio') {
+                        counts['other']++; // Audio models go to "other" for now
+                    } else if (provider === 'video') {
+                        counts['video']++;
+                    } else if (provider === 'siliconflow') {
+                        counts['siliconflow']++;
+                    } else {
+                        counts['other']++;
+                    }
+                });
+                
+                // Cập nhật UI với suffix "filtered" khi có filtering active
+                const isFiltered = selectedCategory !== '' || 
+                                 document.getElementById('model-search').value.trim() !== '' ||
+                                 !filterCheckboxes.text?.checked || 
+                                 !filterCheckboxes.image?.checked || 
+                                 !filterCheckboxes.audio?.checked || 
+                                 !filterCheckboxes.video?.checked;
+                
+                const suffix = isFiltered ? ' 🔍' : '';
+                
+                const countAllElement = document.getElementById('count-all');
+                if (countAllElement) {
+                    countAllElement.textContent = `(${totalCount}${suffix})`;
+                }
+                
+                // Chỉ cập nhật những provider có models trong kết quả filter
+                Object.keys(counts).forEach(key => {
+                    const element = document.getElementById(`count-${key}`);
+                    if (element) {
+                        if (counts[key] > 0 || !isFiltered) {
+                            element.textContent = `(${counts[key]}${suffix})`;
+                        } else {
+                            element.textContent = '(0🚫)';
+                        }
+                    }
+                });
+                
+                // Cập nhật thống kê nổi bật khi filtering
+                const totalModels = 833;
+                const totalModelsElement = document.getElementById('total-models-display');
+                const filteredModelsElement = document.getElementById('filtered-models-display');
+                
+                if (totalModelsElement) {
+                    totalModelsElement.textContent = `${totalModels} models`;
+                }
+                if (filteredModelsElement) {
+                    filteredModelsElement.textContent = `${totalCount} models${suffix}`;
+                }
+            }
+            
+            function getModelType(option) {
+                // Sử dụng cache nếu có
+                const cached = optionCache.get(option);
+                if (cached) {
+                    return cached.modelType;
+                }
+                
+                // Fallback nếu không có cache
+                const text = option.textContent.toLowerCase();
+                const value = option.value.toLowerCase();
+                
+                if (text.includes('dall') || text.includes('flux') || text.includes('stable') || text.includes('image') || value.includes('image')) {
+                    return 'image';
+                }
+                if (text.includes('whisper') || text.includes('tts') || text.includes('suno') || text.includes('audio') || value.includes('audio')) {
+                    return 'audio';
+                }
+                if (text.includes('kling') || text.includes('veo') || text.includes('video') || value.includes('video')) {
+                    return 'video';
+                }
+                return 'text';
+            }
+            
+            // ===== TỐI ƯU HÓA HÀM FILTER - Sử dụng cache và mapping =====
+            function matchesSearch(cached, searchTerm) {
+                if (!searchTerm) return true;
+                
+                const { text, value } = cached;
+                
+                // Tìm kiếm cơ bản
+                if (text.includes(searchTerm) || value.includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Hỗ trợ tìm kiếm tiếng Việt
+                for (const [vietnamese, keywords] of Object.entries(vietnameseSearchMap)) {
+                    if (searchTerm.includes(vietnamese)) {
+                        const keywordList = Array.isArray(keywords) ? keywords : [keywords];
+                        return keywordList.some(keyword => text.includes(keyword) || value.includes(keyword));
+                    }
+                }
+                
+                return false;
+            }
+            
+            function matchesCategory(cached, category) {
+                if (!category) return true;
+                
+                const { provider, value, text } = cached;
+                
+                // Xử lý special cases
+                if (category === 'openai-plus') {
+                    // OpenAI Plus models phải là OpenAI và có keywords premium
+                    if (provider !== 'openai') return false;
+                    return value.includes('gpt-4') || value.includes('gpt-5') || 
+                           value.includes('o1') || value.includes('o3') || value.includes('o4');
+                }
+                
+                if (category === 'other') {
+                    // Other = không thuộc các provider khác
+                    return provider === 'other';
+                }
+                
+                // Fallback cho các provider quan trọng - kiểm tra lại keywords nếu cache có thể sai
+                const providerMapping = providerMappings[category];
+                if (providerMapping) {
+                    // Nếu provider cache đúng, return true ngay
+                    if (provider === category) return true;
+                    
+                    // Fallback: kiểm tra lại keywords để đảm bảo không bỏ sót
+                    // Đặc biệt quan trọng cho Google, OpenAI, Claude
+                    return providerMapping.keywords.some(keyword => 
+                        value.includes(keyword) || text.includes(keyword)
+                    );
+                }
+                
+                // So sánh provider trực tiếp cho các provider khác
+                return provider === category;
+            }
+            
+            function matchesTypeFilter(cached) {
+                const { modelType } = cached;
+                const typeCheckbox = filterCheckboxes[modelType];
+                return typeCheckbox ? typeCheckbox.checked : true;
+            }
+            
+            // Enhanced filter models function - Tối ưu hiệu năng
+            function filterModels() {
+                const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                
+                // Hiển thị loading state
+                modelSelect.innerHTML = '<option disabled>⏳ Đang lọc models...</option>';
+                
+                // Sử dụng cache để lọc nhanh hơn
+                const filteredOptions = allOptions.filter(option => {
+                    const cached = optionCache.get(option);
+                    if (!cached) return false;
+                    
+                    return matchesSearch(cached, searchTerm) && 
+                           matchesCategory(cached, selectedCategory) && 
+                           matchesTypeFilter(cached);
+                });
+                
+                // Apply current sort order
+                const sortType = sortSelect ? sortSelect.value : 'default';
+                let sortedOptions = [...filteredOptions];
+                
+                if (sortType !== 'default') {
+                    switch(sortType) {
+                        case 'name-asc':
+                            sortedOptions.sort((a, b) => {
+                                const aCached = optionCache.get(a);
+                                const bCached = optionCache.get(b);
+                                return (aCached?.text || '').localeCompare(bCached?.text || '');
+                            });
+                            break;
+                        case 'name-desc':
+                            sortedOptions.sort((a, b) => {
+                                const aCached = optionCache.get(a);
+                                const bCached = optionCache.get(b);
+                                return (bCached?.text || '').localeCompare(aCached?.text || '');
+                            });
+                            break;
+                        case 'provider':
+                            sortedOptions.sort((a, b) => {
+                                const aCached = optionCache.get(a);
+                                const bCached = optionCache.get(b);
+                                const aProvider = providerMappings[aCached?.provider]?.providerName || 'Other';
+                                const bProvider = providerMappings[bCached?.provider]?.providerName || 'Other';
+                                return aProvider.localeCompare(bProvider);
+                            });
+                            break;
+                    }
+                }
+                
+                // Sử dụng DocumentFragment để tối ưu DOM manipulation
+                const fragment = document.createDocumentFragment();
+                
+                if (filteredOptions.length === 0) {
+                    const noResult = document.createElement('option');
+                    const activeProvider = document.querySelector('.provider-option.active');
+                    const providerNameElement = activeProvider ? activeProvider.querySelector('.provider-name') : null;
+                    const providerName = providerNameElement ? providerNameElement.textContent : 'provider này';
+                    
+                    noResult.textContent = `❌ Không tìm thấy model cho ${providerName}`;
+                    if (searchTerm) {
+                        noResult.textContent += ` với từ khóa "${searchTerm}"`;
+                    }
+                    noResult.disabled = true;
+                    noResult.style.color = '#f44336';
+                    noResult.style.fontStyle = 'italic';
+                    fragment.appendChild(noResult);
+                } else {
+                    // Clone và append options
+                    sortedOptions.forEach(option => {
+                        fragment.appendChild(option.cloneNode(true));
+                    });
+                }
+                
+                // Clear và append fragment (chỉ 1 lần DOM manipulation)
+                modelSelect.innerHTML = '';
+                modelSelect.appendChild(fragment);
+                
+                // Update model count
+                updateModelCount();
+                
+                // Update dynamic provider counts based on current filtering
+                updateDynamicProviderCounts(sortedOptions);
+            }
+            
+            // Lắng nghe sự kiện tìm kiếm với debounce để tối ưu hiệu năng
+            const debouncedFilter = debounce(() => {
+                filterModels();
+                updateFilterStatus();
+            }, 300); // 300ms debounce
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    debouncedFilter();
+                });
+            }
+            
+           
+        });
+    </script>
+    
+    <!-- Script quản lý intro modal -->
+    <script>
+        // Intro modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const introBtn = document.getElementById('intro-btn');
+            const introModal = document.getElementById('intro-modal');
+            const introModalClose = document.querySelector('.intro-modal-close');
+            const introModalOverlay = document.querySelector('.intro-modal-overlay');
+
+            // Show intro modal
+            function showIntroModal() {
+                if (introModal) {
+                    introModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                    console.log('✅ Intro modal opened');
+                }
+            }
+
+            // Hide intro modal
+            function hideIntroModal() {
+                if (introModal) {
+                    introModal.style.display = 'none';
+                    document.body.style.overflow = ''; // Restore scrolling
+                    console.log('✅ Intro modal closed');
+                }
+            }
+
+            // Event listeners
+            if (introBtn) {
+                introBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🎯 Intro button clicked');
+                    showIntroModal();
+                });
+            }
+
+            if (introModalClose) {
+                introModalClose.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('❌ Close button clicked');
+                    hideIntroModal();
+                });
+            }
+
+            if (introModalOverlay) {
+                introModalOverlay.addEventListener('click', function(e) {
+                    if (e.target === introModalOverlay) {
+                        console.log('🎯 Overlay clicked');
+                        hideIntroModal();
+                    }
+                });
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && introModal && introModal.style.display === 'flex') {
+                    console.log('⌨️ Escape key pressed');
+                    hideIntroModal();
+                }
+            });
+
+            // Global function to select model and close modal
+            window.selectModelAndClose = function(modelValue) {
+                console.log('🤖 Selecting model and closing modal:', modelValue);
+                
+                // Select the model in the dropdown
+                const modelSelect = document.getElementById('model-select');
+                if (modelSelect) {
+                    // Find the option with matching value
+                    for (let i = 0; i < modelSelect.options.length; i++) {
+                        if (modelSelect.options[i].value === modelValue) {
+                            modelSelect.selectedIndex = i;
+                            console.log('✅ Model selected:', modelSelect.options[i].textContent);
+                            break;
+                        }
+                    }
+                }
+                
+                // Close the modal
+                hideIntroModal();
+                
+                // Focus on chat input to start conversation
+                const chatInput = document.getElementById('chat-input');
+                if (chatInput) {
+                    setTimeout(() => {
+                        chatInput.focus();
+                        chatInput.placeholder = `Bắt đầu trò chuyện với ${modelValue}...`;
+                    }, 300);
+                }
+            };
+
+            console.log('🎯 Intro modal functionality initialized');
+        });
+    </script>
+    
+    <!-- Modal giới thiệu -->
+    <div id="intro-modal" class="intro-modal" style="display: none;">
+        <div class="intro-modal-overlay"></div>
+        <div class="intro-modal-content">
+            <div class="intro-modal-header">
+                <h2>Giới thiệu Thư Viện AI</h2>
+                <button class="intro-modal-close">&times;</button>
+            </div>
+            <div class="intro-modal-body">
+                <!-- Welcome screen content -->
+                <div class="welcome-screen-modal">
+                    <div class="welcome-header">
+                        <div class="welcome-logo">
+                            <span class="logo-icon">🧠</span>
+                            <h1>Thư Viện AI</h1>
+                            <p class="tagline">Nền tảng AI đa năng với hơn 500+ Models</p>
+                        </div>
+                    </div>
+                    
+                    <div class="features-grid">
+                        <div class="feature-card highlight">
+                            <div class="feature-icon">🚀</div>
+                            <h3>500+ AI Models</h3>
+                            <p>Truy cập hơn 500 mô hình AI từ OpenAI, Anthropic, Google, Chinese AI và nhiều nhà cung cấp hàng đầu</p>
+                            <div class="feature-stats">
+                                <span class="stat">✨ GPT-4, Claude, Gemini</span>
+                                <span class="stat">🎨 DALL-E, MidJourney, Flux</span>
+                                <span class="stat">🎵 Suno, Whisper, TTS</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">💬</div>
+                            <h3>Chat Thông Minh</h3>
+                            <p>Lưu trữ lịch sử cuộc trò chuyện, tìm kiếm models theo từ khóa, và quản lý nhiều cuộc hội thoại</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">🎯</div>
+                            <h3>Lọc & Tìm Kiếm</h3>
+                            <p>Tìm kiếm models theo tên, phân loại theo nhà cung cấp, lọc theo tính năng (Text, Image, Audio, Video)</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3>Xử Lý Đa Dạng</h3>
+                            <p>Chế độ đơn lẻ, Ensemble (4 AI), hoặc Phân tán (28 AI) để có kết quả tối ưu nhất</p>
+                        </div>
+                    </div>
+                    
+                    <div class="cta-section">
+                        <h2>Bắt đầu trò chuyện với AI ngay!</h2>
+                        <p>Chọn một AI model phù hợp và bắt đầu cuộc trò chuyện của bạn</p>
+                        <div class="quick-actions">
+                            <button class="quick-btn" onclick="selectModelAndClose('gpt-4')">
+                                <span>🤖</span> GPT-4
+                            </button>
+                            <button class="quick-btn" onclick="selectModelAndClose('claude-3-5-sonnet-20241022')">
+                                <span>🧠</span> Claude 3.5
+                            </button>
+                            <button class="quick-btn" onclick="selectModelAndClose('gemini-1-5-pro')">
+                                <span>💎</span> Gemini Pro
+                            </button>
+                            <button class="quick-btn" onclick="selectModelAndClose('doubao-1-5-pro-256k-250115')">
+                                <span>🎯</span> Doubao Pro
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-section">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">AI Models</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">28</div>
+                            <div class="stat-label">Nhà cung cấp</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">4</div>
+                            <div class="stat-label">Loại AI</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Hoạt động</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Sidebar Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarClose = document.getElementById('sidebar-close');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            
+            function openSidebar() {
+                if (sidebar) sidebar.classList.add('mobile-active');
+                if (sidebarOverlay) sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeSidebar() {
+                if (sidebar) sidebar.classList.remove('mobile-active');
+                if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', openSidebar);
+            }
+            
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', closeSidebar);
+            }
+            
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('mobile-active')) {
+                    if (!sidebar.contains(e.target) && e.target !== sidebarToggle) {
+                        closeSidebar();
+                    }
+                }
+            });
+            
+            // Close sidebar on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('mobile-active')) {
+                    closeSidebar();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

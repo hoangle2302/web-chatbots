@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Use ONLY black and white colors */
+        :root {
+            --primary: #000000;
+            /* Pure Black */
+            --secondary: #ffffff;
+            /* Pure White */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--secondary);
+            /* Pure white background */
+            min-height: 100vh;
+            color: var(--primary);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(odd) {
+            animation-delay: -2s;
+            animation-duration: 8s;
+        }
+
+        .particle:nth-child(even) {
+            animation-delay: -4s;
+            animation-duration: 10s;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--secondary);
+            /* Pure white background */
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--primary);
+            box-shadow: 0 8px 32px var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .navbar {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--primary);
+            /* Black text on white background */
+        }
+
+        .nav-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-brand span:first-child {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 4px;
+            list-style: none;
+            align-items: center;
+            background: var(--secondary);
+            /* White background for menu */
+            padding: 6px;
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--primary);
+            box-shadow: 0 4px 15px var(--primary);
+        }
+
+        .nav-menu a {
+            color: var(--primary);
+            /* Black text */
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
+            display: block;
+        }
+
+        .nav-menu a:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .nav-menu a.active {
+            background: var(--primary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .nav-menu a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: var(--primary);
+            /* Black text */
+        }
+
+        .user-profile:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary);
+            /* Black background */
+            color: var(--secondary);
+            /* White text */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--primary);
+        }
+
+        .user-profile:hover .user-avatar {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--secondary);
+            color: var(--primary);
+            box-shadow: 0 8px 25px var(--primary);
+        }
+
+        /* ===== Đây là CSS cho phần nội dung chính ===== */
+        
+        main {
+            position: relative;
+            z-index: 10;
+            /* Đây chính là phần đẩy nội dung xuống: */
+            padding-top: 90px; 
+            width: 100%;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: #737373;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (min-width: 768px) {
+            .content-wrapper {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: #1a1a1a;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #f5f5f5;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #1a1a1a;
+            font-family: inherit;
+            transition: background-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            background-color: #ebebeb;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #737373;
+        }
+
+        .form-group textarea {
+            resize: none;
+            min-height: 120px;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #2d2d2d;
+        }
+
+        .submit-btn:disabled {
+            background-color: #737373;
+            cursor: not-allowed;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .contact-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            margin-top: 0.25rem;
+        }
+
+        .contact-details h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+        }
+
+        .contact-details p {
+            color: #737373;
+            font-size: 0.95rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #1a1a1a;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            background-color: #16a34a;
+        }
+
+        .toast.error {
+            background-color: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-brand">
+                <span>🧠</span>
+                <span>Thư Viện AI</span>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="index.html">Chat</a></li>
+                <li><a href="document-manager.html">Tài liệu</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+            <div class="user-profile" id="userProfile">
+                <div class="user-avatar">👤</div>
+                <span id="userName">Loading...</span>
+            </div>
+        </nav>
+        <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="header">
+                <h1>Liên hệ với chúng tôi</h1>
+                <p>Có câu hỏi hoặc cần hỗ trợ? Chúng tôi luôn sẵn sàng giúp đỡ bạn</p>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="card">
+                    <h2>Gửi tin nhắn</h2>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Họ và tên <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" placeholder="Nguyễn Văn A">
+                            <div class="error-message" id="nameError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="example@gmail.com">
+                            <div class="error-message" id="emailError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" placeholder="0123456789">
+                            <div class="error-message" id="phoneError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Nội dung <span class="required">*</span></label>
+                            <textarea id="message" name="message" placeholder="Nhập nội dung của bạn..."></textarea>
+                            <div class="error-message" id="messageError"></div>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn">Gửi tin nhắn</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Thông tin liên hệ</h2>
+
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <p>example@gmail.com</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                        <div class="contact-details">
+                            <h3>Facebook</h3>
+                            <p>Tran Hai Bang</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                        <div class="contact-details">
+                            <h3>Facebook</h3>
+                            <p>Le Huy Hoang</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+    </main>
+
+
+    <script>
+        // Load user information
+        function loadUserInfo() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const token = localStorage.getItem('token');
+
+                if (user && user.username) {
+                    document.getElementById('userName').textContent = user.username;
+
+                    // Cập nhật tiêu đề trang cho trang Contact
+                    document.title = `Contact - ${user.username} - Thư Viện AI`;
+
+                    // Add user role if available
+                    if (user.role) {
+                        const userProfile = document.getElementById('userProfile');
+                        userProfile.title = `Role: ${user.role}`;
+                    }
+
+                    console.log('User loaded:', user);
+                } else {
+                    // No user data, redirect to login
+                    console.warn('No user data found, redirecting to login');
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Check authentication on page load
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn('No token found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+            loadUserInfo();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        document.addEventListener('mousedown', function() {
+            document.body.classList.remove('keyboard-navigation');
+        });
+    </script>
+    
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            
+            function toggleMobileMenu() {
+                if (mobileMenuToggle && navMenu && mobileMenuOverlay) {
+                    const isActive = navMenu.classList.contains('mobile-active');
+                    
+                    if (isActive) {
+                        navMenu.classList.remove('mobile-active');
+                        mobileMenuToggle.classList.remove('active');
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else {
+                        navMenu.classList.add('mobile-active');
+                        mobileMenuToggle.classList.add('active');
+                        mobileMenuOverlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                }
+            }
+            
+            function closeMobileMenu() {
+                if (navMenu && mobileMenuToggle && mobileMenuOverlay) {
+                    navMenu.classList.remove('mobile-active');
+                    mobileMenuToggle.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+            }
+            
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (navMenu) {
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', closeMobileMenu);
+                });
+            }
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && navMenu && navMenu.classList.contains('mobile-active')) {
+                    closeMobileMenu();
+                }
+            });
+            
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

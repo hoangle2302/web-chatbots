@@ -1,0 +1,126 @@
+# ============================================
+# NGINX CONFIG VỚI SSL/HTTPS
+# Copy file này thành default.conf hoặc tạo block server riêng cho HTTPS
+# ============================================
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name thuvienai.io.vn www.thuvienai.io.vn;
+    
+    # Redirect all HTTP requests to HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+# HTTPS Server
+server {
+    listen 443 ssl http2;
+    server_name thuvienai.io.vn www.thuvienai.io.vn;
+
+    # SSL Certificate paths
+    # Cần thay đổi đường dẫn này sau khi cài SSL certificate
+    ssl_certificate /etc/nginx/ssl/thuvienai.io.vn.crt;
+    ssl_certificate_key /etc/nginx/ssl/thuvienai.io.vn.key;
+
+    # SSL Configuration (modern, secure)
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # Security Headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Root folder for frontend static files
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+
+    # -----------------------------
+    # PHP Backend via FastCGI
+    # -----------------------------
+    location ^~ /api/ {
+        # Pass to PHP-FPM container (port 8000 as configured in Dockerfile)
+        fastcgi_pass php-backend:8000;
+        fastcgi_index router.php;
+        
+        # Pass all /api/* requests to router.php for routing
+        fastcgi_param SCRIPT_FILENAME /var/www/html/router.php;
+        fastcgi_param DOCUMENT_ROOT /var/www/html;
+        
+        # Include standard FastCGI parameters
+        include fastcgi_params;
+        
+        # Preserve original request info
+        fastcgi_param REQUEST_URI $request_uri;
+        fastcgi_param QUERY_STRING $query_string;
+        fastcgi_param REQUEST_METHOD $request_method;
+        fastcgi_param CONTENT_TYPE $content_type;
+        fastcgi_param CONTENT_LENGTH $content_length;
+        
+        # Ensure request body is passed to PHP-FPM
+        fastcgi_pass_request_body on;
+        fastcgi_read_timeout 300;
+    }
+
+    # -----------------------------
+    # FastAPI service
+    # -----------------------------
+    location /ai-tool/ {
+        proxy_pass http://fastapi:8001/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
+    # -----------------------------
+    # Frontend static files
+    # -----------------------------
+    location / {
+        try_files $uri $uri/ /index.html;
+        
+        # Ensure proper MIME types
+        types {
+            text/html html htm;
+            text/css css;
+            application/javascript js;
+            application/json json;
+        }
+        
+        # Cache control for static assets
+        location ~* \.(jpg|jpeg|png|gif|ico|css|js|woff|woff2|ttf|svg)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+        
+        # Disable caching for HTML files
+        location ~ \.html$ {
+            add_header Cache-Control "no-cache, no-store, must-revalidate";
+            add_header Pragma "no-cache";
+            add_header Expires "0";
+        }
+    }
+
+    # -----------------------------
+    # PHP file fallback (optional)
+    # -----------------------------
+    location ~ \.php$ {
+        fastcgi_pass php-backend:8000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/html$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT /var/www/html;
+    }
+
+    # Logs
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log warn;
+}
+
+
+

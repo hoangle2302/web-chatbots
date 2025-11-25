@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Thư Viện AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    </style>
+</head>
+<body class="login-page">
+    <!-- Particles Background -->
+    <div class="particles"></div>
+    
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo-section">
+                <span class="logo-icon">🧠</span>
+                <h1>Thư Viện AI</h1>
+                <p class="auth-subtitle">Đăng nhập để truy cập 500+ mô hình AI</p>
+            </div>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        
+        <form id="login-form" class="auth-form">
+            <div class="form-group">
+                <input type="text" id="username" name="username" placeholder=" " required>
+                <label for="username">Tên đăng nhập hoặc Email</label>
+                <span class="input-icon">👤</span>
+            </div>
+            
+            <div class="form-group password-field">
+                <input type="password" id="password" name="password" placeholder=" " required>
+                <label for="password">Mật khẩu</label>
+                <button type="button" class="password-toggle" onclick="togglePassword('password')" title="Ẩn/hiện mật khẩu">
+                    👁️
+                </button>
+                <span class="input-icon">🔒</span>
+            </div>
+            
+            <button type="submit" class="auth-button">
+                <span>Đăng nhập</span>
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Đang đăng nhập...</p>
+            </div>
+        </form>
+        
+        <div class="auth-links">
+            <p>Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a></p>
+            <p><a href="index.html">← Quay lại trang chủ</a></p>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Cấu hình backend URL
+        // Sử dụng BACKEND_URL từ CONFIG (đã được cấu hình trong config.js)
+        // Auto-detect HTTPS để tránh Mixed Content error
+        function getBackendUrl() {
+            // Nếu trang đang HTTPS, luôn dùng domain hiện tại (không dùng IP)
+            if (window.location.protocol === 'https:') {
+                // Ưu tiên dùng CONFIG.getSafeBackendUrl (đã có logic chuyển IP sang domain)
+                if (window.CONFIG?.getSafeBackendUrl) {
+                    const url = window.CONFIG.getSafeBackendUrl();
+                    // Double check: nếu vẫn là IP, chuyển sang domain
+                    if (url.includes('103.77.243.190') || url.match(/^\d+\.\d+\.\d+\.\d+/)) {
+                        return window.location.protocol + '//' + window.location.hostname;
+                    }
+                    return url;
+                }
+                // Fallback: dùng domain hiện tại với HTTPS
+                return window.location.protocol + '//' + window.location.hostname;
+            }
+            // HTTP: dùng CONFIG hoặc origin
+            return window.CONFIG?.BACKEND_URL || window.location.origin;
+        }
+        const BACKEND_URL = getBackendUrl();
+        
+        // Debug: log để kiểm tra
+        console.log('Backend URL:', BACKEND_URL);
+        
+        // Function để toggle password visibility
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleButton = passwordField.parentNode.querySelector('.password-toggle');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.innerHTML = '🙈';
+                toggleButton.title = 'Ẩn mật khẩu';
+            } else {
+                passwordField.type = 'password';
+                toggleButton.innerHTML = '👁️';
+                toggleButton.title = 'Hiện mật khẩu';
+            }
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles
+        createParticles();
+
+        // Enhanced login functionality with animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const submitButton = document.querySelector('.auth-button');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+
+            // Add input validation styles
+            function validateInput(input) {
+                if (input.value.trim() === '') {
+                    input.classList.remove('valid');
+                    input.classList.add('invalid');
+                    input.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+                    input.style.boxShadow = '0 0 0 3px rgba(0, 0, 0, 0.2)';
+                    return false;
+                } else {
+                    input.classList.remove('invalid');
+                    input.classList.add('valid');
+                    input.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+                    input.style.boxShadow = '0 0 0 3px rgba(0, 0, 0, 0.1)';
+                    return true;
+                }
+            }
+
+            // Real-time validation
+            usernameInput.addEventListener('blur', () => validateInput(usernameInput));
+            passwordInput.addEventListener('blur', () => validateInput(passwordInput));
+
+            // Enhanced message display
+            function showMessage(element, message, duration = 5000) {
+                element.textContent = message;
+                element.style.display = 'block';
+                element.style.animation = 'slideInDown 0.3s ease';
+                
+                setTimeout(() => {
+                    element.style.animation = 'slideInDown 0.3s ease reverse';
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, 300);
+                }, duration);
+            }
+
+            // Form submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                // Validate inputs
+                const isUsernameValid = validateInput(usernameInput);
+                const isPasswordValid = validateInput(passwordInput);
+                
+                if (!isUsernameValid || !isPasswordValid) {
+                    showMessage(errorMessage, 'Vui lòng điền đầy đủ thông tin đăng nhập', 3000);
+                    return;
+                }
+                
+                // Hide previous messages
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+                
+                // Disable button and show loading
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span>Đang xử lý...</span>';
+                loading.style.display = 'block';
+                
+                try {
+                    // Đảm bảo luôn dùng HTTPS nếu trang đang HTTPS
+                    let apiUrl;
+                    if (window.CONFIG?.API?.urlWithParams) {
+                        apiUrl = window.CONFIG.API.urlWithParams('AUTH_PHP', {action: 'login'});
+                        // Đảm bảo HTTPS nếu trang đang HTTPS
+                        if (window.location.protocol === 'https:' && apiUrl.startsWith('http://')) {
+                            apiUrl = apiUrl.replace('http://', 'https://');
+                        }
+                    } else {
+                        const endpoint = window.CONFIG?.ENDPOINTS?.AUTH_PHP || '/api/auth.php';
+                        apiUrl = BACKEND_URL + endpoint + '?action=login';
+                    }
+                    
+                    console.log('API URL:', apiUrl); // Debug
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    });
+                    
+                    // Parse response safely: try JSON when content-type is JSON; otherwise use text
+                    let data = null;
+                    let rawText = '';
+                    const contentType = response.headers.get('content-type') || '';
+                    try {
+                        if (contentType.includes('application/json')) {
+                            data = await response.json();
+                        } else {
+                            rawText = await response.text();
+                        }
+                    } catch (parseErr) {
+                        console.debug('Response parse fallback, non-JSON body.');
+                        try { rawText = rawText || await response.text(); } catch (_) {}
+                    }
+
+                    if (response.ok && data && typeof data === 'object') {
+                        // Hỗ trợ cả 2 dạng schema: {token, user} hoặc {data: {token, user}}
+                        const payload = data.data && typeof data.data === 'object' ? data.data : data;
+                        const userObj = payload.user || null;
+                        const tokenStr = payload.token || null;
+
+                        showMessage(successMessage, data.message || 'Đăng nhập thành công! Đang chuyển hướng...', 2000);
+                        
+                        // Reset input styles
+                        usernameInput.style.borderColor = 'rgba(34, 197, 94, 0.6)';
+                        passwordInput.style.borderColor = 'rgba(34, 197, 94, 0.6)';
+                        
+                        // Save user info
+                        if (userObj) {
+                            localStorage.setItem('user', JSON.stringify(userObj));
+                        }
+                        if (tokenStr) {
+                            localStorage.setItem('token', tokenStr);
+                        }
+                        
+                        // Redirect to index (chat) with animation
+                        setTimeout(() => {
+                            document.body.style.opacity = '0';
+                            document.body.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 300);
+                        }, 1500);
+                    } else {
+                        // Hiển thị thông báo lỗi chi tiết từ backend
+                        let errorMsg = 'Thông tin đăng nhập không chính xác';
+                        const isJsonObject = data && typeof data === 'object';
+
+                        if (isJsonObject && data.message) {
+                            errorMsg = data.message;
+                        } else if (isJsonObject && data.error) {
+                            errorMsg = data.error;
+                        } else if (!isJsonObject && rawText) {
+                            // Backend trả về HTML hoặc text (ví dụ lỗi 404/router)
+                            const snippet = rawText.replace(/\s+/g, ' ').slice(0, 180);
+                            errorMsg = `Server trả về phản hồi không hợp lệ (status ${response.status}). Vui lòng thử lại sau.`;
+                            console.warn('Non-JSON response snippet:', snippet);
+                        }
+
+                        // Xử lý các loại lỗi khác nhau (nếu có mã lỗi JSON)
+                        if (isJsonObject && data.code === 'USER_NOT_REGISTERED') {
+                            errorMsg = 'Tài khoản chưa được đăng ký. Vui lòng đăng ký trước.';
+                            errorMsg += ' <a href="register.html" style="color: #3b82f6; text-decoration: underline;">Đăng ký ngay</a>';
+                        } else if (isJsonObject && data.code === 'ACCOUNT_DEACTIVATED') {
+                            errorMsg = 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.';
+                        } else if (isJsonObject && data.code === 'ACCOUNT_LOCKED') {
+                            errorMsg = 'Tài khoản tạm thời bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau.';
+                        } else if (isJsonObject && data.code === 'INVALID_PASSWORD') {
+                            errorMsg = 'Mật khẩu không đúng. Vui lòng kiểm tra lại.';
+                        }
+
+                        showMessage(errorMessage, errorMsg);
+                        
+                        // Reset input styles to error
+                        usernameInput.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+                        passwordInput.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showMessage(errorMessage, 'Thông tin đăng nhập không chính xác');
+                    
+                    // Reset input styles to error
+                    usernameInput.classList.add('invalid');
+                    passwordInput.classList.add('invalid');
+                } finally {
+                    // Re-enable button and hide loading
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<span>Đăng nhập</span>';
+                    loading.style.display = 'none';
+                }
+            });
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && (usernameInput.value.trim() && passwordInput.value.trim())) {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            // Auto-focus first input
+            usernameInput.focus();
+        });
+    </script>
+</body>
+</html>

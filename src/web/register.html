@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Thư Viện AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body class="register-page">
+    <!-- Particles Background -->
+    <div class="particles"></div>
+    
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo-section">
+                <span class="logo-icon">🧠</span>
+                <h1>Thư Viện AI</h1>
+                <p class="auth-subtitle">Tạo tài khoản để truy cập 500+ mô hình AI</p>
+            </div>
+        </div>
+        
+        <div class="welcome-bonus">
+            <h3>🎉 Ưu đãi đặc biệt!</h3>
+            <p>Đăng ký ngay và nhận <strong>10 credits miễn phí</strong> để trải nghiệm AI cùng <strong>Premium Access</strong> trong 7 ngày!</p>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        
+        <form id="register-form" class="auth-form">
+            <div class="form-group">
+                <input type="text" id="username" name="username" placeholder=" " required minlength="3">
+                <label for="username">Tên đăng nhập</label>
+                <span class="input-icon">👤</span>
+            </div>
+            
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder=" " required>
+                <label for="email">Địa chỉ Email</label>
+                <span class="input-icon">📧</span>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder=" " required minlength="8">
+                <label for="password">Mật khẩu</label>
+                <button type="button" class="password-toggle" onclick="togglePassword('password')" title="Ẩn/hiện mật khẩu">
+                    👁️
+                </button>
+                <span class="input-icon">🔒</span>
+                <div class="password-requirements">
+                    Ít nhất 8 ký tự, có chữ hoa, chữ thường và số
+                </div>
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="password-strength-bar"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="confirm-password" name="confirm-password" placeholder=" " required>
+                <label for="confirm-password">Xác nhận mật khẩu</label>
+                <button type="button" class="password-toggle" onclick="togglePassword('confirm-password')" title="Ẩn/hiện mật khẩu">
+                    👁️
+                </button>
+                <span class="input-icon">🔐</span>
+            </div>
+            
+            <button type="submit" class="auth-button">
+                <span>Tạo tài khoản</span>
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Đang tạo tài khoản...</p>
+            </div>
+        </form>
+        
+        <div class="auth-links">
+            <p>Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></p>
+            <p><a href="index.html">← Quay lại trang chủ</a></p>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Cấu hình backend URL
+        // Sử dụng BACKEND_URL từ CONFIG (đã được cấu hình trong config.js)
+        // Auto-detect HTTPS để tránh Mixed Content error
+        function getSafeBackendUrl() {
+            // Nếu trang đang HTTPS, luôn dùng domain hiện tại (không dùng IP)
+            if (window.location.protocol === 'https:') {
+                // Nếu có CONFIG và getSafeBackendUrl
+                if (window.CONFIG?.getSafeBackendUrl) {
+                    const url = window.CONFIG.getSafeBackendUrl();
+                    // Double check: nếu vẫn là IP, chuyển sang domain
+                    if (url && (url.includes('103.77.243.190') || url.match(/^\d+\.\d+\.\d+\.\d+/))) {
+                        return window.location.protocol + '//' + window.location.hostname;
+                    }
+                    return url;
+                }
+                // Nếu có CONFIG.BACKEND_URL
+                if (window.CONFIG?.BACKEND_URL) {
+                    let url = window.CONFIG.BACKEND_URL;
+                    // Nếu là IP, chuyển sang domain
+                    if (url.includes('103.77.243.190') || url.match(/^\d+\.\d+\.\d+\.\d+/)) {
+                        return window.location.protocol + '//' + window.location.hostname;
+                    }
+                    // Đảm bảo HTTPS
+                    if (url.startsWith('http://') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+                        url = url.replace('http://', 'https://');
+                    }
+                    return url;
+                }
+                // Fallback: dùng domain hiện tại với HTTPS
+                return window.location.protocol + '//' + window.location.hostname;
+            }
+            // HTTP: dùng CONFIG hoặc origin
+            return window.CONFIG?.BACKEND_URL || window.location.origin;
+        }
+        
+        const BACKEND_URL = getSafeBackendUrl();
+        
+        // Function để toggle password visibility
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleButton = passwordField.parentNode.querySelector('.password-toggle');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.innerHTML = '🙈';
+                toggleButton.title = 'Ẩn mật khẩu';
+            } else {
+                passwordField.type = 'password';
+                toggleButton.innerHTML = '👁️';
+                toggleButton.title = 'Hiện mật khẩu';
+            }
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles
+        createParticles();
+
+        // Enhanced form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        this.classList.add('valid');
+                        this.classList.remove('invalid');
+                    } else {
+                        this.classList.remove('valid');
+                        this.classList.add('invalid');
+                    }
+                });
+            });
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            
+            // Hide old messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Validate inputs
+            if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+                errorMessage.textContent = 'Vui lòng điền đầy đủ thông tin!';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Check password match
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Mật khẩu xác nhận không khớp!';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Check password strength
+            if (password.length < 8) {
+                errorMessage.textContent = 'Mật khẩu phải có ít nhất 8 ký tự!';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Show loading
+            loading.style.display = 'block';
+            
+            try {
+                // Đảm bảo luôn dùng HTTPS nếu trang đang HTTPS
+                let authUrl;
+                if (window.CONFIG?.API?.urlWithParams) {
+                    authUrl = window.CONFIG.API.urlWithParams('AUTH_PHP', {action: 'register'});
+                } else {
+                    authUrl = window.CONFIG?.API?.url('AUTH_PHP') || BACKEND_URL + (window.CONFIG?.ENDPOINTS?.AUTH_PHP || '/api/auth.php');
+                    authUrl = authUrl + '?action=register';
+                }
+                
+                // Final check: đảm bảo HTTPS và domain (không dùng IP)
+                if (window.location.protocol === 'https:') {
+                    // Nếu là IP, chuyển sang domain
+                    if (authUrl.includes('103.77.243.190') || authUrl.match(/http:\/\/\d+\.\d+\.\d+\.\d+/) || authUrl.match(/https:\/\/\d+\.\d+\.\d+\.\d+/)) {
+                        authUrl = window.location.protocol + '//' + window.location.hostname + '/api/auth.php?action=register';
+                    } else if (authUrl.startsWith('http://') && !authUrl.includes('localhost') && !authUrl.includes('127.0.0.1')) {
+                        authUrl = authUrl.replace('http://', 'https://');
+                    }
+                }
+                
+                console.log('🔗 Register URL:', authUrl);
+                const response = await fetch(authUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password,
+                        display_name: username // Sử dụng username làm display_name
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    successMessage.textContent = data.message || 'Đăng ký thành công';
+                    successMessage.style.display = 'block';
+                    
+                    // Lưu thông tin user và token vào localStorage từ response
+                    if (data.data && data.data.user && data.data.token) {
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                        localStorage.setItem('token', data.data.token);
+                    }
+                    
+                    // Chuyển hướng sau 2 giây
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    // Hiển thị thông báo lỗi chi tiết từ backend
+                    let errorMsg = 'Đăng ký thất bại. Vui lòng thử lại.';
+                    
+                    if (data.message) {
+                        errorMsg = data.message;
+                    } else if (data.error) {
+                        errorMsg = data.error;
+                    }
+                    
+                    // Xử lý các loại lỗi khác nhau
+                    if (data.code === 'USERNAME_EXISTS') {
+                        errorMsg = 'Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.';
+                    } else if (data.code === 'INVALID_USERNAME') {
+                        errorMsg = 'Tên đăng nhập phải có từ 3-80 ký tự.';
+                    } else if (data.code === 'INVALID_PASSWORD') {
+                        errorMsg = 'Mật khẩu phải có ít nhất 6 ký tự.';
+                    } else if (data.code === 'ADMIN_LIMIT_REACHED') {
+                        errorMsg = 'Chỉ được phép có 1 tài khoản admin.';
+                    }
+                    
+                    errorMessage.textContent = errorMsg;
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Lỗi kết nối. Vui lòng thử lại.';
+                errorMessage.style.display = 'block';
+                
+                // Mark inputs as invalid
+                document.querySelectorAll('input').forEach(input => {
+                    input.classList.add('invalid');
+                    input.classList.remove('valid');
+                });
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh Toán</title>
+  <style>
+    :root {
+      --primary: #000;
+      --secondary: #fff;
+      --success: #0e9a41; /* xanh lá */
+    }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--secondary);
+      color: var(--primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    img {
+      width: 280px;
+      height: auto;
+      border: 1px solid var(--primary);
+      border-radius: 12px;
+      padding: 10px;
+      background: var(--secondary);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .buttons {
+      margin-top: 40px;
+      display: flex;
+      gap: 10px;
+    }
+    a.btn {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--secondary);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+    a.btn:hover {
+      background: #333;
+    }
+    a.btn-success {
+      background: var(--success);
+    }
+    a.btn-success:hover {
+      background: #15803d;
+    }
+
+    .info {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #444;
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      max-width: 280px;
+    }
+    .info strong {
+      display: inline-block;
+      width: 110px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quét mã QR để thanh toán</h1>
+  <p id="packageName">Đang tải...</p>
+  <img id="qrImage" src="" alt="Mã QR thanh toán">
+
+  <div class="info" id="qrInfo">
+    <p><strong>Ngân hàng:</strong> MBBank</p>
+    <p><strong>Số tài khoản:</strong> 0965587362</p>
+    <p><strong>Số tiền:</strong> <span id="amountText">0</span> đ</p>
+    <p><strong>nội dung chuyển khoản:</strong> thuvien_ai ten  user </p>
+  </div>
+
+  <!-- Nút điều hướng -->
+  <div class="buttons">
+    <a href="pricing.html" class="btn">← Quay lại trang nạp</a>
+    <a href="index.html" class="btn btn-success">Đã gửi yêu cầu thanh toán</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const amount = params.get('amount');
+    const qrPath = `qr/${amount}.png`;
+
+    // Thông tin cấu hình VietQR
+    const viet_qr = {
+      identifier: "MBBank",     
+      account_number: "0965587362",
+      amount: amount ? amount * 1000 : 0
+    };
+
+    if (amount) {
+      document.getElementById("packageName").innerText = `Gói ${amount}.000đ`;
+      document.getElementById("qrImage").src = qrPath;
+      document.getElementById("amountText").innerText = `${amount}.000`;
+      console.log("VietQR Info:", viet_qr);
+    } else {
+      document.getElementById("packageName").innerText = "Không tìm thấy thông tin gói nạp.";
+      document.getElementById("amountText").innerText = "0";
+    }
+  </script>
+</body>
+</html>

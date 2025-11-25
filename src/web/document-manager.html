@@ -1,0 +1,2344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Tài liệu - Thư Viện AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* Use ONLY black and white colors */
+        :root {
+            --primary: #000000;   /* Pure Black */
+            --secondary: #ffffff; /* Pure White */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--secondary); /* Pure white background */
+            min-height: 100vh;
+            color: var(--primary);
+            position: relative;
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Floating Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(odd) {
+            animation-delay: -2s;
+            animation-duration: 8s;
+        }
+
+        .particle:nth-child(even) {
+            animation-delay: -4s;
+            animation-duration: 10s;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--secondary);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--primary);
+            box-shadow: 0 8px 32px var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        body.document-manager-page .navbar {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--primary);
+        }
+
+        .nav-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-brand span:first-child {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 4px;
+            list-style: none;
+            align-items: center;
+            background: var(--secondary);
+            padding: 6px;
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--primary);
+            box-shadow: 0 4px 15px var(--primary);
+        }
+
+        .nav-menu a {
+            color: var(--primary);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
+            display: block;
+        }
+
+        .nav-menu a:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .nav-menu a.active {
+            background: var(--primary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .nav-menu a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: var(--primary);
+        }
+
+        .user-profile:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--primary);
+        }
+
+        .user-profile:hover .user-avatar {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--secondary);
+            color: var(--primary);
+            box-shadow: 0 8px 25px var(--primary);
+        }
+
+        /* Main Content */
+        body.document-manager-page main {
+            position: relative;
+            z-index: 10;
+            padding-top: 90px;
+            width: 100% !important;
+            margin: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        body.document-manager-page .document-container {
+            padding: 20px 20px 60px !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--primary);
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
+        }
+
+        body.document-manager-page .page-subtitle {
+            font-size: 20px;
+            color: var(--primary);
+            opacity: 0.85;
+            font-weight: 400;
+            line-height: 1.5;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: var(--secondary);
+            backdrop-filter: blur(25px);
+            border: 2px solid var(--primary);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 50px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px var(--primary);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--primary);
+            opacity: 0.3;
+            border-radius: 12px;
+            padding: 60px 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            opacity: 0.6;
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--secondary);
+            opacity: 1;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .upload-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtitle {
+            font-size: 16px;
+            color: var(--primary);
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover .upload-subtitle,
+        .upload-area.dragover .upload-subtitle {
+            color: var(--secondary);
+        }
+
+        .upload-button {
+            background: var(--primary);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            color: var(--secondary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-button:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--primary);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Controls */
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            width: 100%;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            background: var(--secondary);
+            color: var(--primary);
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input::placeholder {
+            color: var(--primary);
+            opacity: 0.6;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--primary);
+            opacity: 0.6;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            background: var(--secondary);
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: var(--secondary);
+            border-color: var(--secondary);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px var(--primary);
+        }
+
+        /* Document Grid */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .document-card {
+            background: var(--secondary);
+            backdrop-filter: blur(25px);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .document-card .doc-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .document-card .doc-actions {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Simplified hover effects */
+        .document-card:hover .doc-title {
+            color: var(--primary);
+        }
+
+        .document-card:hover .doc-meta {
+            color: var(--primary);
+        }
+
+        .document-card:hover .doc-icon {
+            transform: scale(1.1);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: var(--secondary);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .stat-item:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            border-color: var(--secondary);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .stat-item:hover .stat-number {
+            color: var(--secondary);
+        }
+
+        .stat-item:hover .stat-label {
+            color: var(--secondary);
+            opacity: 1;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--primary);
+            opacity: 0.6;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .empty-subtitle {
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .slide-in {
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideInUp 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--primary);
+            padding: 5px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            color: var(--primary);
+            line-height: 1.6;
+        }
+
+        /* Document Viewer Styles */
+        .doc-viewer {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-preview {
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .doc-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-item {
+            background: rgba(0, 0, 0, 0.03);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--primary);
+        }
+
+        .info-label {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--primary);
+            opacity: 0.7;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* AI Analysis Styles */
+        .analysis-section {
+            margin-bottom: 25px;
+        }
+
+        .analysis-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analysis-content {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .analysis-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .keyword-tag {
+            background: var(--primary);
+            color: var(--secondary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Action Buttons in Modal */
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            background: var(--secondary);
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .modal-btn.primary:hover {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .document-container {
+                padding: 20px 20px 60px;
+            }
+
+            .nav-menu {
+                gap: 3px;
+                padding: 5px;
+            }
+
+            .nav-menu a {
+                padding: 9px 18px;
+                font-size: 13px;
+            }
+
+            .nav-btn {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-menu {
+                gap: 2px;
+                padding: 4px;
+                flex-wrap: nowrap;
+                justify-content: center;
+            }
+
+            .nav-menu a {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .user-profile span {
+                display: none;
+            }
+
+            .document-container {
+                padding: 20px;
+            }
+
+            .page-header {
+                padding: 20px 0;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+
+            .page-subtitle {
+                font-size: 18px;
+            }
+
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .document-card {
+                padding: 25px 20px;
+            }
+
+            .document-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .doc-icon {
+            font-size: 48px;
+            opacity: 0.8;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .document-card:hover .doc-icon {
+            opacity: 1;
+            transform: scale(1.15) rotate(8deg);
+            filter: drop-shadow(0 8px 16px rgba(255, 255, 255, 0.3));
+        }
+
+        .doc-menu {
+            position: relative;
+        }
+
+        .doc-menu-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            opacity: 0.6;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .doc-menu-btn:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .document-card:hover .doc-menu-btn {
+            color: var(--secondary);
+            opacity: 0.8;
+        }
+
+        .document-card:hover .doc-menu-btn:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .doc-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            transition: all 0.4s ease;
+            letter-spacing: -0.3px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 56px;
+        }
+
+        .document-card:hover .doc-title {
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .doc-meta {
+            font-size: 15px;
+            color: var(--primary);
+            opacity: 0.75;
+            margin-bottom: 20px;
+            transition: all 0.4s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .doc-meta::before {
+            content: '📅';
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .document-card:hover .doc-meta {
+            color: var(--secondary);
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .doc-size {
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(0, 0, 0, 0.05);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .document-card:hover .doc-size {
+            color: var(--secondary);
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .doc-action-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px 16px;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            background: var(--secondary);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 42px;
+            white-space: nowrap;
+            user-select: none;
+        }
+        
+        .doc-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .doc-action-btn:not(:disabled):hover {
+            background: var(--primary);
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .doc-action-btn:not(:disabled):active {
+            transform: translateY(0);
+        }
+
+        .doc-action-btn.primary {
+            background: var(--primary);
+            color: var(--secondary);
+            border-color: var(--primary);
+        }
+        
+        .doc-action-btn.primary:not(:disabled):hover {
+            background: var(--secondary);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .document-card:hover .doc-action-btn:not(:disabled) {
+            border-color: var(--secondary);
+        }
+        
+        .document-card:hover .doc-action-btn:not(.primary):not(:disabled):hover {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        .document-card:hover .doc-action-btn.primary:not(:disabled):hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+        
+        /* Đảm bảo download button luôn clickable */
+        .doc-action-btn.download-btn {
+            position: relative;
+            z-index: 1000;
+        }
+        
+        /* Loại bỏ mọi overlay có thể chặn click */
+        .doc-actions * {
+            pointer-events: auto;
+        }
+        
+        .document-card .doc-actions .doc-action-btn {
+            pointer-events: auto !important;
+        }
+
+        /* Add subtle animation to the entire card content */
+        .document-card .doc-content {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .document-card:hover .doc-content {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="document-manager-page">
+    <!-- Particles Background -->
+    <div class="particles"></div>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-brand">
+                <span>🧠</span>
+                <span><a href="index.html">Thư Viện AI</a></span>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="index.html">Chat</a></li>
+                <li><a href="document-manager.html" class="active">Tài liệu</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-avatar">👤</div>
+                <span>Admin</span>
+            </div>
+        </nav>
+        <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="document-container">
+            <div class="page-header slide-in">
+                <h1 class="page-title">Quản lý Tài liệu</h1>
+                <p class="page-subtitle">Upload, tổ chức và phân tích tài liệu với AI</p>
+            </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section slide-in">
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Kéo thả tài liệu vào đây</div>
+                <div class="upload-subtitle">Hỗ trợ PDF, DOC, DOCX, TXT, CSV (Tối đa 10MB)</div>
+                <button class="upload-button" onclick="document.getElementById('file-input').click()">
+                    Chọn tài liệu
+                </button>
+                <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.txt,.csv">
+            </div>
+        </div>
+
+            <!-- Controls -->
+            <div class="controls-section slide-in">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Tìm kiếm tài liệu..." id="search-input">
+                </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="pdf">PDF</button>
+                <button class="filter-btn" data-filter="doc">Word</button>
+                <button class="filter-btn" data-filter="txt">Text</button>
+                <button class="filter-btn" data-filter="csv">CSV</button>
+            </div>
+        </div>
+
+            <!-- Documents Grid -->
+            <div class="documents-grid slide-in" id="documents-grid">
+                <div class="loading" id="loading-documents" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Đang tải tài liệu...</p>
+                </div>
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <div class="empty-icon">📁</div>
+                    <div class="empty-title">Chưa có tài liệu nào</div>
+                    <div class="empty-subtitle">Hãy upload tài liệu đầu tiên của bạn!</div>
+                </div>
+            <!-- Documents will be loaded here -->
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar slide-in" id="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="stat-total">0</div>
+                <div class="stat-label">Tổng tài liệu</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="stat-size">0 MB</div>
+                <div class="stat-label">Dung lượng sử dụng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="stat-analyzed">-</div>
+                <div class="stat-label">Đã phân tích</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="stat-month">-</div>
+                <div class="stat-label">Tháng này</div>
+            </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Document Viewer Modal -->
+    <div id="documentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Xem Tài Liệu</h2>
+                <button class="modal-close" onclick="closeModal('documentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="doc-info" id="docInfo">
+                    <!-- Document info will be populated here -->
+                </div>
+                <div class="doc-viewer">
+                    <div class="doc-preview" id="docPreview">
+                        <!-- Document content will be displayed here -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn" onclick="downloadDocument()">📥 Tải xuống</button>
+                    <button class="modal-btn primary" onclick="openAIAnalysis()">🤖 Phân tích AI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Modal -->
+    <div id="analysisModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🤖 Phân Tích AI</h2>
+                <button class="modal-close" onclick="closeModal('analysisModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="analysisContent">
+                    <!-- Analysis content will be populated here -->
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn" onclick="exportAnalysis()">📊 Xuất báo cáo</button>
+                    <button class="modal-btn primary" onclick="saveAnalysis()">💾 Lưu phân tích</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // ===== CONFIGURATION =====
+        // Sử dụng CONFIG.API.url() để tạo full URL từ endpoint key
+        function getSafeBackendUrl() {
+            // Nếu trang đang HTTPS, luôn dùng domain hiện tại (không dùng IP)
+            if (window.location.protocol === 'https:') {
+                // Nếu có CONFIG và getSafeBackendUrl
+                if (window.CONFIG?.getSafeBackendUrl) {
+                    const url = window.CONFIG.getSafeBackendUrl();
+                    // Double check: nếu vẫn là IP, chuyển sang domain
+                    if (url && (url.includes('103.77.243.190') || url.match(/^\d+\.\d+\.\d+\.\d+/))) {
+                        return window.location.protocol + '//' + window.location.hostname;
+                    }
+                    return url;
+                }
+                // Nếu có CONFIG.BACKEND_URL
+                if (window.CONFIG?.BACKEND_URL) {
+                    let url = window.CONFIG.BACKEND_URL;
+                    // Nếu là IP, chuyển sang domain
+                    if (url.includes('103.77.243.190') || url.match(/^\d+\.\d+\.\d+\.\d+/)) {
+                        return window.location.protocol + '//' + window.location.hostname;
+                    }
+                    // Đảm bảo HTTPS
+                    if (url.startsWith('http://') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+                        url = url.replace('http://', 'https://');
+                    }
+                    return url;
+                }
+                // Fallback: dùng domain hiện tại với HTTPS
+                return window.location.protocol + '//' + window.location.hostname;
+            }
+            // HTTP: dùng CONFIG hoặc origin
+            return window.CONFIG?.BACKEND_URL || window.location.origin;
+        }
+        
+        let API_BASE = window.CONFIG?.API?.url('DOCUMENTS_PHP') || (window.CONFIG?.BACKEND_URL || getSafeBackendUrl()) + (window.CONFIG?.ENDPOINTS?.DOCUMENTS_PHP || '/api/documents.php');
+        
+        // Final check: đảm bảo HTTPS và domain (không dùng IP)
+        if (window.location.protocol === 'https:') {
+            // Nếu là IP, chuyển sang domain
+            if (API_BASE.includes('103.77.243.190') || API_BASE.match(/http:\/\/\d+\.\d+\.\d+\.\d+/) || API_BASE.match(/https:\/\/\d+\.\d+\.\d+\.\d+/)) {
+                API_BASE = window.location.protocol + '//' + window.location.hostname + '/api/documents.php';
+            } else if (API_BASE.startsWith('http://') && !API_BASE.includes('localhost') && !API_BASE.includes('127.0.0.1')) {
+                API_BASE = API_BASE.replace('http://', 'https://');
+            }
+        }
+        
+        console.log('🔗 Documents API URL:', API_BASE);
+        
+        // ===== AUTHENTICATION =====
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+        
+        async function ensureAuth() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        async function fetchJSON(url, options = {}) {
+            const token = getToken();
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    ...options.headers
+                }
+            });
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+                throw new Error(error.message || `HTTP ${response.status}`);
+            }
+            
+            return await response.json();
+        }
+        
+        // ===== DOWNLOAD FUNCTION (Define early) =====
+        // Download document by ID - Global function
+        window.downloadDocumentById = async function downloadDocumentById(buttonOrId, filename, originalName) {
+            let button = null;
+            let docId, docFilename, docOriginalName;
+            
+            try {
+                console.log('📥 downloadDocumentById called with:', { buttonOrId, filename, originalName });
+                
+                // Nếu là button element, lấy data từ attributes
+                if (typeof buttonOrId === 'object' && buttonOrId !== null && buttonOrId.nodeType === 1) {
+                    button = buttonOrId;
+                    docId = button.getAttribute('data-doc-id');
+                    docFilename = button.getAttribute('data-filename');
+                    docOriginalName = button.getAttribute('data-original-name');
+                    console.log('📋 Extracted data:', { docId, docFilename, docOriginalName });
+                } else {
+                    // Nếu là ID (backward compatibility)
+                    docId = buttonOrId;
+                    docFilename = filename;
+                    docOriginalName = originalName;
+                }
+                
+                if (!docId) {
+                    alert('Không tìm thấy ID tài liệu');
+                    return;
+                }
+                
+                const token = getToken();
+                if (!token) {
+                    alert('Vui lòng đăng nhập để tải tài liệu');
+                    return;
+                }
+                
+                // Hiển thị loading state
+                if (button) {
+                    const originalHTML = button.innerHTML;
+                    button.innerHTML = '⏳ Đang tải...';
+                    button.disabled = true;
+                    
+                    // Restore function
+                    const restoreButton = () => {
+                        button.innerHTML = originalHTML;
+                        button.disabled = false;
+                    };
+                    
+                    // Sử dụng endpoint download với authentication
+                    const url = API_BASE + `?action=download&id=${docId}`;
+                    console.log('🌐 Download URL:', url);
+                    
+                    try {
+                        // Fetch file với Authorization header
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+                        
+                        console.log('📡 Response status:', response.status);
+                        
+                        // Kiểm tra response
+                        if (!response.ok) {
+                            const errorText = await response.text().catch(() => '');
+                            let errorMessage = 'Không thể tải tài liệu';
+                            
+                            try {
+                                const errorData = JSON.parse(errorText);
+                                errorMessage = errorData.message || errorMessage;
+                            } catch (e) {
+                                errorMessage = errorText || response.statusText || errorMessage;
+                            }
+                            
+                            throw new Error(errorMessage + ' (Status: ' + response.status + ')');
+                        }
+                        
+                        // Lấy blob từ response
+                        const blob = await response.blob();
+                        console.log('📦 Blob received:', { size: blob.size, type: blob.type });
+                        
+                        if (!blob || blob.size === 0) {
+                            throw new Error('File trống hoặc không thể tải được');
+                        }
+                        
+                        // Lấy filename từ header hoặc dùng originalName
+                        let downloadFilename = docOriginalName || docFilename;
+                        const contentDisposition = response.headers.get('Content-Disposition');
+                        console.log('📝 Content-Disposition:', contentDisposition);
+                        
+                        if (contentDisposition) {
+                            // Try to extract filename from Content-Disposition header
+                            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            const matches = filenameRegex.exec(contentDisposition);
+                            if (matches != null && matches[1]) {
+                                downloadFilename = matches[1].replace(/['"]/g, '');
+                                // Decode URI if needed
+                                try {
+                                    downloadFilename = decodeURIComponent(downloadFilename);
+                                } catch (e) {
+                                    // If decoding fails, use as is
+                                }
+                            }
+                        }
+                        
+                        console.log('💾 Final filename:', downloadFilename);
+                        
+                        // Tạo download link và trigger download
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = downloadFilename;
+                        link.style.display = 'none';
+                        
+                        // Append to body
+                        document.body.appendChild(link);
+                        console.log('🔗 Download link created');
+                        
+                        // Trigger click
+                        link.click();
+                        console.log('👆 Download link clicked');
+                        
+                        // Clean up
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(blobUrl);
+                            console.log('🧹 Cleaned up');
+                        }, 200);
+                        
+                        restoreButton();
+                        console.log('✅ File downloaded successfully:', downloadFilename);
+                        
+                    } catch (fetchError) {
+                        console.error('❌ Download error:', fetchError);
+                        alert('Lỗi khi tải tài liệu: ' + fetchError.message);
+                        restoreButton();
+                    }
+                } else {
+                    // Không có button, vẫn tải được
+                    const url = API_BASE + `?action=download&id=${docId}`;
+                    window.open(url, '_blank');
+                }
+                
+            } catch (error) {
+                console.error('❌ General error:', error);
+                alert('Lỗi khi tải tài liệu: ' + error.message);
+                if (button) {
+                    button.innerHTML = '📥 Tải xuống';
+                    button.disabled = false;
+                }
+            }
+        };
+        
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles
+        createParticles();
+        // Upload functionality
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Handle file upload
+        async function handleFiles(files) {
+            for (const file of Array.from(files)) {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`File ${file.name} quá lớn. Vui lòng chọn file nhỏ hơn 10MB.`);
+                    continue;
+                }
+                
+                await uploadFile(file);
+            }
+        }
+        
+        // Upload file to server
+        async function uploadFile(file) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const token = getToken();
+                const response = await fetch(API_BASE + '?action=upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Upload thành công: ${file.name}`);
+                    loadDocuments(); // Reload documents list
+                    loadStats(); // Reload stats
+                } else {
+                    alert(`Lỗi upload: ${result.message || 'Không thể upload file'}`);
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert(`Lỗi khi upload file: ${error.message}`);
+            }
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const searchTerm = e.target.value.trim();
+            
+            searchTimeout = setTimeout(() => {
+                if (searchTerm.length > 0) {
+                    searchDocuments(searchTerm);
+                } else {
+                    loadDocuments();
+                }
+            }, 500);
+        });
+        
+        // Search documents
+        async function searchDocuments(keyword) {
+            try {
+                const response = await fetchJSON(API_BASE + `?action=search&q=${encodeURIComponent(keyword)}`);
+                
+                if (response.success) {
+                    displayDocuments(response.data.documents || []);
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                alert('Lỗi khi tìm kiếm: ' + error.message);
+            }
+        }
+
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        let currentFilter = 'all';
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                currentFilter = button.dataset.filter;
+                loadDocuments(currentFilter);
+            });
+        });
+        
+        // Load documents from API
+        async function loadDocuments(fileType = 'all') {
+            try {
+                document.getElementById('loading-documents').style.display = 'flex';
+                document.getElementById('empty-state').style.display = 'none';
+                
+                let url = API_BASE + '?action=list';
+                if (fileType !== 'all') {
+                    url += `&file_type=${fileType}`;
+                }
+                
+                const response = await fetchJSON(url);
+                
+                if (response.success) {
+                    const documents = response.data.documents || [];
+                    displayDocuments(documents);
+                } else {
+                    throw new Error(response.message || 'Không thể tải danh sách tài liệu');
+                }
+            } catch (error) {
+                console.error('Load documents error:', error);
+                document.getElementById('documents-grid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-title">Lỗi khi tải tài liệu</div>
+                        <div class="empty-subtitle">${error.message}</div>
+                    </div>
+                `;
+            } finally {
+                document.getElementById('loading-documents').style.display = 'none';
+            }
+        }
+        
+        // Display documents in grid
+        function displayDocuments(documents) {
+            const grid = document.getElementById('documents-grid');
+            const loadingEl = document.getElementById('loading-documents');
+            const emptyEl = document.getElementById('empty-state');
+            
+            // Remove loading and empty state
+            loadingEl.style.display = 'none';
+            
+            if (documents.length === 0) {
+                emptyEl.style.display = 'block';
+                // Remove all document cards except loading and empty state
+                const cards = grid.querySelectorAll('.document-card');
+                cards.forEach(card => card.remove());
+                return;
+            }
+            
+            emptyEl.style.display = 'none';
+            
+            // Remove existing document cards (but keep loading and empty state)
+            const cards = grid.querySelectorAll('.document-card');
+            cards.forEach(card => card.remove());
+            
+            // Add new document cards
+            documents.forEach(doc => {
+                const card = createDocumentCard(doc);
+                grid.appendChild(card);
+            });
+        }
+        
+        // Create document card element
+        function createDocumentCard(doc) {
+            const card = document.createElement('div');
+            card.className = 'document-card slide-in';
+            card.dataset.type = getFileTypeFromMime(doc.file_type);
+            card.dataset.id = doc.id;
+            
+            const fileIcon = getFileIcon(doc.file_type);
+            const fileSize = formatFileSize(doc.file_size);
+            const createdDate = formatDate(doc.created_at);
+            
+            card.innerHTML = `
+                <div class="doc-header">
+                    <span class="doc-icon">${fileIcon}</span>
+                    <div class="doc-menu">
+                        <button class="doc-menu-btn" onclick="showDocumentMenu(event, ${doc.id})">⋮</button>
+                    </div>
+                </div>
+                <div class="doc-content">
+                    <h3 class="doc-title">${escapeHtml(doc.original_name || doc.filename)}</h3>
+                    <div class="doc-meta">
+                        Ngày tải: ${createdDate} • <span class="doc-size">${fileSize}</span>
+                    </div>
+                    <div class="doc-actions">
+                        <button class="doc-action-btn" onclick="viewDocument(${doc.id})">👁️ Xem</button>
+                        <button class="doc-action-btn download-btn" data-doc-id="${doc.id}" data-filename="${escapeHtml(doc.filename)}" data-original-name="${escapeHtml(doc.original_name || doc.filename)}">📥 Tải xuống</button>
+                        <button class="doc-action-btn primary" onclick="analyzeDocumentById(${doc.id})">🤖 Phân tích AI</button>
+                    </div>
+                </div>
+            `;
+            
+            // Attach download event listener directly
+            const downloadBtn = card.querySelector('.download-btn');
+            if (downloadBtn) {
+                // Remove any existing onclick handlers
+                downloadBtn.removeAttribute('onclick');
+                
+                // Add click event listener
+                downloadBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    console.log('🔵 Download button clicked!', {
+                        button: this,
+                        docId: this.getAttribute('data-doc-id'),
+                        filename: this.getAttribute('data-filename'),
+                        originalName: this.getAttribute('data-original-name'),
+                        hasFunction: typeof window.downloadDocumentById === 'function'
+                    });
+                    
+                    // Ensure function exists
+                    if (typeof window.downloadDocumentById === 'function') {
+                        try {
+                            window.downloadDocumentById(this);
+                        } catch (error) {
+                            console.error('❌ Error calling downloadDocumentById:', error);
+                            alert('Lỗi: ' + error.message);
+                        }
+                    } else {
+                        console.error('❌ downloadDocumentById function not found!');
+                        alert('Lỗi: Hàm download không tồn tại. Vui lòng reload trang.');
+                    }
+                    
+                    return false;
+                }, true); // Use capture phase to ensure it fires first
+                
+                // Also make sure button is clickable
+                downloadBtn.style.cursor = 'pointer';
+                downloadBtn.style.pointerEvents = 'auto';
+                downloadBtn.style.position = 'relative';
+                downloadBtn.style.zIndex = '1000';
+            } else {
+                console.warn('⚠️ Download button not found in card!');
+            }
+            
+            return card;
+        }
+        
+        // Helper functions
+        function getFileTypeFromMime(mimeType) {
+            if (!mimeType) return 'file';
+            if (mimeType.includes('pdf')) return 'pdf';
+            if (mimeType.includes('word') || mimeType.includes('document')) return 'doc';
+            if (mimeType.includes('text') || mimeType.includes('plain')) return 'txt';
+            if (mimeType.includes('csv') || mimeType.includes('excel')) return 'csv';
+            return 'file';
+        }
+        
+        function getFileIcon(mimeType) {
+            const type = getFileTypeFromMime(mimeType);
+            const icons = {
+                'pdf': '📄',
+                'doc': '📝',
+                'txt': '📋',
+                'csv': '📊',
+                'file': '📁'
+            };
+            return icons[type] || '📁';
+        }
+        
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 B';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetchJSON(API_BASE + '?action=stats');
+                
+                if (response.success) {
+                    const stats = response.data;
+                    document.getElementById('stat-total').textContent = stats.total_files || 0;
+                    document.getElementById('stat-size').textContent = formatFileSize(stats.total_size || 0);
+                    // Note: analyzed and this month stats need to be calculated separately
+                    document.getElementById('stat-analyzed').textContent = '-';
+                    document.getElementById('stat-month').textContent = '-';
+                }
+            } catch (error) {
+                console.error('Load stats error:', error);
+            }
+        }
+
+        // Slide in animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const slideInElements = document.querySelectorAll('.slide-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            slideInElements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+                observer.observe(el);
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Document menu
+        function showDocumentMenu(event, docId) {
+            event.stopPropagation();
+            // Simple menu for now - can be enhanced with dropdown
+            if (confirm('Bạn có muốn xóa tài liệu này?')) {
+                deleteDocument(docId);
+            }
+        }
+        
+        // Delete document
+        async function deleteDocument(docId) {
+            try {
+                const response = await fetchJSON(API_BASE + `?action=delete&id=${docId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.success) {
+                    alert('Xóa tài liệu thành công!');
+                    loadDocuments();
+                    loadStats();
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể xóa tài liệu'));
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Lỗi khi xóa tài liệu: ' + error.message);
+            }
+        }
+
+        let currentDocument = null;
+
+        // Document viewing functionality
+        async function viewDocument(docId) {
+            try {
+                const response = await fetchJSON(API_BASE + `?action=get&id=${docId}`);
+                
+                if (response.success) {
+                    const doc = response.data;
+                    currentDocument = doc;
+
+                    // Populate modal
+                    document.getElementById('modalTitle').textContent = doc.original_name || doc.filename;
+                    
+                    // Create document info
+                    const docInfo = document.getElementById('docInfo');
+                    docInfo.innerHTML = `
+                        <div class="info-item">
+                            <div class="info-label">Tên tài liệu</div>
+                            <div class="info-value">${escapeHtml(doc.original_name || doc.filename)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Loại file</div>
+                            <div class="info-value">${doc.file_type}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ngày tải</div>
+                            <div class="info-value">${formatDate(doc.created_at)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Kích thước</div>
+                            <div class="info-value">${formatFileSize(doc.file_size)}</div>
+                        </div>
+                    `;
+
+                    // Display document content
+                    const docPreview = document.getElementById('docPreview');
+                    if (doc.content) {
+                        docPreview.textContent = doc.content;
+                    } else {
+                        docPreview.textContent = 'Nội dung không có sẵn. Vui lòng tải xuống file để xem.';
+                    }
+
+                    // Show modal
+                    showModal('documentModal');
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể tải tài liệu'));
+                }
+            } catch (error) {
+                console.error('View document error:', error);
+                alert('Lỗi khi xem tài liệu: ' + error.message);
+            }
+        }
+
+        // AI Analysis functionality
+        async function analyzeDocumentById(docId) {
+            try {
+                const response = await fetchJSON(API_BASE + `?action=get&id=${docId}`);
+                
+                if (response.success) {
+                    const doc = response.data;
+                    currentDocument = doc;
+
+                    // Show analysis modal
+                    showModal('analysisModal');
+                    
+                    // Start analysis
+                    startAIAnalysis(doc.original_name || doc.filename, getFileTypeFromMime(doc.file_type), doc.content);
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể tải tài liệu'));
+                }
+            } catch (error) {
+                console.error('Analyze document error:', error);
+                alert('Lỗi khi phân tích tài liệu: ' + error.message);
+            }
+        }
+
+        function generateDocumentPreview(type, title) {
+            const previews = {
+                pdf: `📄 ${title}
+
+Đây là bản xem trước của tài liệu PDF. Nội dung chính bao gồm:
+
+1. Tổng quan về xu hướng AI 2024
+   - Machine Learning tiếp tục phát triển mạnh mẽ
+   - Natural Language Processing đạt bước tiến vượt bậc
+   - Computer Vision ứng dụng rộng rãi trong thực tế
+
+2. Các công nghệ nổi bật
+   - Large Language Models (LLMs)
+   - Generative AI
+   - Multimodal AI Systems
+
+3. Ứng dụng thực tế
+   - Tự động hóa quy trình kinh doanh
+   - Hỗ trợ ra quyết định thông minh
+   - Cải thiện trải nghiệm khách hàng
+
+[Nội dung đầy đủ chỉ hiển thị khi mở file gốc]`,
+
+                doc: `📝 ${title}
+
+=== KẾ HOẠCH MARKETING Q4 2024 ===
+
+I. MỤC TIÊU CHIẾN LƯỢC
+- Tăng trưởng doanh thu 25% so với Q3
+- Mở rộng thị trường sang 3 tỉnh thành mới
+- Nâng cao nhận diện thương hiệu
+
+II. NGÂN SÁCH MARKETING
+- Tổng ngân sách: 2.5 tỷ VNĐ
+- Digital Marketing: 60%
+- Traditional Marketing: 30%
+- Event & PR: 10%
+
+III. KÊNH MARKETING CHÍNH
+1. Social Media Marketing
+2. Google Ads & SEO
+3. Email Marketing
+4. Influencer Collaboration
+
+[Xem chi tiết trong file gốc]`,
+
+                csv: `📊 ${title}
+
+Tháng,Doanh Thu,Khách Hàng Mới,Tỷ Lệ Chuyển Đổi
+01/2024,145000000,234,12.5%
+02/2024,167000000,287,14.2%
+03/2024,189000000,312,15.8%
+04/2024,201000000,345,16.3%
+05/2024,223000000,389,17.1%
+06/2024,245000000,412,18.4%
+07/2024,267000000,456,19.2%
+08/2024,289000000,501,20.1%
+09/2024,312000000,545,21.3%
+
+Tổng cộng: 9 tháng
+Doanh thu trung bình: 226,444,444 VNĐ/tháng
+Khách hàng mới trung bình: 387 người/tháng
+
+[Dữ liệu đầy đủ trong file CSV]`,
+
+                txt: `📋 ${title}
+
+MEETING NOTES - Product Development Team
+Date: 15/09/2024
+Attendees: 12 members
+
+== AGENDA ==
+1. Q4 Product Roadmap Review
+2. User Feedback Analysis
+3. Technical Challenges Discussion
+4. Resource Allocation
+
+== KEY DECISIONS ==
+- Prioritize mobile app optimization
+- Implement AI-powered search feature
+- Schedule beta testing for December 2024
+- Increase QA team by 2 members
+
+== ACTION ITEMS ==
+□ Update technical specifications (Due: 20/09)
+□ Create user testing plan (Due: 25/09)
+□ Prepare budget proposal (Due: 30/09)
+
+== NEXT MEETING ==
+Date: 22/09/2024
+Time: 2:00 PM
+Location: Conference Room A
+
+[Full notes available in original file]`
+            };
+
+            return previews[type] || `Không thể xem trước loại file ${type.toUpperCase()}`;
+        }
+
+        function startAIAnalysis(title, type, content) {
+            const analysisContent = document.getElementById('analysisContent');
+            
+            // Show loading state
+            analysisContent.innerHTML = `
+                <div class="analysis-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Đang phân tích tài liệu bằng AI...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            `;
+
+            // Simulate progress (in real implementation, this would call AI API)
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                document.querySelector('.progress-fill').style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        showAnalysisResults(title, type, content);
+                    }, 500);
+                }
+            }, 300);
+        }
+
+        function showAnalysisResults(title, type, content) {
+            const analysisContent = document.getElementById('analysisContent');
+            
+            // Basic analysis based on content
+            // In real implementation, this would call AI service
+            let summary = "Tài liệu đã được phân tích thành công.";
+            let keywords = [];
+            let sentiment = "Trung tính";
+            let complexity = "Trung bình";
+            let readability = "85%";
+            let topics = [];
+            
+            if (content) {
+                // Simple keyword extraction (in real app, use AI)
+                const words = content.toLowerCase().match(/\b\w{4,}\b/g) || [];
+                const wordCount = {};
+                words.forEach(word => {
+                    wordCount[word] = (wordCount[word] || 0) + 1;
+                });
+                keywords = Object.keys(wordCount)
+                    .sort((a, b) => wordCount[b] - wordCount[a])
+                    .slice(0, 6);
+                
+                summary = content.substring(0, 200) + (content.length > 200 ? '...' : '');
+                
+                // Determine complexity based on content length
+                if (content.length < 1000) {
+                    complexity = "Đơn giản";
+                } else if (content.length > 5000) {
+                    complexity = "Phức tạp";
+                }
+                
+                topics = keywords.slice(0, 4);
+            }
+            
+            const result = {
+                summary: summary,
+                keywords: keywords.length > 0 ? keywords : ["Tài liệu", "Phân tích", "Nội dung"],
+                sentiment: sentiment,
+                complexity: complexity,
+                readability: readability,
+                topics: topics.length > 0 ? topics : ["Chủ đề chính"]
+            };
+            
+            analysisContent.innerHTML = `
+                <div class="analysis-section">
+                    <div class="analysis-title">📋 Tóm tắt nội dung</div>
+                    <div class="analysis-content">
+                        <p>${result.summary}</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <div class="analysis-title">🔑 Từ khóa chính</div>
+                    <div class="analysis-content">
+                        <div class="keyword-tags">
+                            ${result.keywords.map(keyword => `<span class="keyword-tag">${keyword}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <div class="analysis-title">📊 Thống kê phân tích</div>
+                    <div class="analysis-content">
+                        <div class="doc-info">
+                            <div class="info-item">
+                                <div class="info-label">Cảm xúc tổng thể</div>
+                                <div class="info-value">${result.sentiment}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Độ phức tạp</div>
+                                <div class="info-value">${result.complexity}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Khả năng đọc hiểu</div>
+                                <div class="info-value">${result.readability}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Chủ đề chính</div>
+                                <div class="info-value">${result.topics.length} chủ đề</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <div class="analysis-title">🎯 Chủ đề được phát hiện</div>
+                    <div class="analysis-content">
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            ${result.topics.map(topic => `<li>${topic}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Modal functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Download document from modal
+        function downloadDocument() {
+            if (!currentDocument || !currentDocument.id) {
+                alert('Không có tài liệu để tải xuống');
+                return;
+            }
+            
+            // Sử dụng hàm downloadDocumentById
+            if (typeof window.downloadDocumentById === 'function') {
+                window.downloadDocumentById(
+                    currentDocument.id,
+                    currentDocument.filename,
+                    currentDocument.original_name || currentDocument.filename
+                );
+            } else {
+                alert('Lỗi: Hàm download không tồn tại');
+            }
+        }
+
+        function openAIAnalysis() {
+            if (!currentDocument || !currentDocument.id) {
+                alert('Không có tài liệu để phân tích');
+                return;
+            }
+            
+            closeModal('documentModal');
+            setTimeout(() => {
+                analyzeDocumentById(currentDocument.id);
+            }, 300);
+        }
+
+        function exportAnalysis() {
+            alert('Đang xuất báo cáo phân tích...');
+        }
+
+        function saveAnalysis() {
+            alert('Đã lưu kết quả phân tích!');
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                closeModal(e.target.id);
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!await ensureAuth()) return;
+            
+            // Load documents and stats
+            await loadDocuments();
+            await loadStats();
+        });
+    </script>
+    
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            
+            function toggleMobileMenu() {
+                if (mobileMenuToggle && navMenu && mobileMenuOverlay) {
+                    const isActive = navMenu.classList.contains('mobile-active');
+                    
+                    if (isActive) {
+                        navMenu.classList.remove('mobile-active');
+                        mobileMenuToggle.classList.remove('active');
+                        mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else {
+                        navMenu.classList.add('mobile-active');
+                        mobileMenuToggle.classList.add('active');
+                        mobileMenuOverlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                }
+            }
+            
+            function closeMobileMenu() {
+                if (navMenu && mobileMenuToggle && mobileMenuOverlay) {
+                    navMenu.classList.remove('mobile-active');
+                    mobileMenuToggle.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+            }
+            
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (navMenu) {
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', closeMobileMenu);
+                });
+            }
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && navMenu && navMenu.classList.contains('mobile-active')) {
+                    closeMobileMenu();
+                }
+            });
+            
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

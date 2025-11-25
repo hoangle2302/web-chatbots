@@ -1,0 +1,97 @@
+# ============================================
+# Docker Compose file for Chatbot Project
+# ============================================
+version: '3.3'
+
+services:
+  # ============================================
+  # 1. MySQL (internal only)
+  # ============================================
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Ri8WyKzif0R3UYng
+      MYSQL_DATABASE: thuvien_ai_pro
+      MYSQL_USER: app
+      MYSQL_PASSWORD: 3-PbdK6LzY&JGThH
+    volumes:
+      - ./deploy/data/database:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+    networks:
+      - chatbot-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # 2. PHP Backend (php-fpm, internal only)
+  # ============================================
+  php-backend:
+    build:
+      context: .                  # root folder
+      dockerfile: deploy/docker/php/Dockerfile
+    container_name: php-backend
+    restart: always
+    environment:
+      DB_HOST: mysql
+      DB_NAME: thuvien_ai_pro
+      DB_USERNAME: app
+      DB_PASSWORD: 3-PbdK6LzY&JGThH
+      MYSQL_SSL_CA: ""       # empty disables SSL
+    expose:
+      - "8000"  # chỉ expose nội bộ cho NGINX
+    volumes:
+      - ./src/php-backend:/var/www/html
+      - php-docDb:/var/www/html/uploads
+      - ./config.env:/var/www/html/config.env
+    depends_on:
+      - mysql
+    networks:
+      - chatbot-net
+
+  # ============================================
+  # 3. FastAPI microservice (internal only)
+  # ============================================
+  fastapi:
+    build:
+      context: .                               # root project folder
+      dockerfile: deploy/docker/fastapi/Dockerfile
+    container_name: fastapi
+    restart: always
+    volumes:
+      - ./src/php-backend/tools/AI_tool:/app  # FastAPI source
+    networks:
+      - chatbot-net
+
+  # ============================================
+  # 4. NGINX gateway (public)
+  # ============================================
+  web:
+    image: nginx:latest
+    container_name: frontend-web
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./src/web:/usr/share/nginx/html
+      - ./deploy/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-backend
+      - fastapi
+    networks:
+      - chatbot-net
+
+# ============================================
+# Networks & Volumes
+# ============================================
+networks:
+  chatbot-net:
+
+volumes:
+  mysql-data:
+  php-docDb:

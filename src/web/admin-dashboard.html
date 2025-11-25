@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Thư Viện AI</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #f1f5f9;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            --white: #ffffff;
+            --black: #000000;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            color: var(--gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        /* ===== HEADER ===== */
+        .admin-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--white);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.2;
+        }
+
+        .brand-subtitle {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .user-avatar {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--info) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 0.875rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #d97706;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--gray-200);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            transition: var(--transition-slow);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1rem;
+        }
+
+        .card-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .stat-label {
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: var(--warning);
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .card-content {
+            padding: 2rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .card-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-content::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .card-content::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .card-content::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* ===== TABLES ===== */
+        .table-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .table th {
+            background: var(--gray-50);
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .table td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Column widths */
+        .table th:nth-child(1), .table td:nth-child(1) { width: 8%; }  /* ID */
+        .table th:nth-child(2), .table td:nth-child(2) { width: 15%; } /* Username */
+        .table th:nth-child(3), .table td:nth-child(3) { width: 20%; } /* Email */
+        .table th:nth-child(4), .table td:nth-child(4) { width: 10%; } /* Role */
+        .table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* Status */
+        .table th:nth-child(6), .table td:nth-child(6) { width: 12%; } /* Credits */
+        .table th:nth-child(7), .table td:nth-child(7) { width: 10%; } /* Created */
+        .table th:nth-child(8), .table td:nth-child(8) { width: 15%; } /* Actions */
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+            transition: var(--transition);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-inactive {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .badge-admin {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-user {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .badge[onclick] {
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .badge[onclick]:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* ===== MODELS GRID ===== */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .model-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .model-card:hover {
+            background: var(--white);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .model-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--info) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1rem;
+        }
+
+        .model-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 0.875rem;
+        }
+
+        /* ===== LOADING STATES ===== */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* ===== MESSAGES ===== */
+        .message {
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            margin: 1rem 0;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .message-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--white);
+            margin: 2% auto;
+            border-radius: var(--radius-xl);
+            width: 95%;
+            max-width: 450px;
+            box-shadow: var(--shadow-xl);
+            animation: modalSlideIn 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            color: var(--gray-400);
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 1.75rem;
+            height: 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+        }
+
+        .modal-close:hover {
+            color: var(--gray-600);
+            background: var(--gray-100);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .user-info-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-info-card p {
+            margin: 0.25rem 0;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .credit-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .credit-action {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .credit-action label {
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .credit-action input {
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            background: var(--white);
+            color: var(--gray-900);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .credit-action input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .credit-action input:invalid {
+            border-color: var(--danger);
+        }
+
+        .credit-action .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .admin-header {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .card-content {
+                padding: 1rem;
+                max-height: 400px;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.625rem;
+            }
+
+            /* Mobile column adjustments */
+            .table th:nth-child(1), .table td:nth-child(1) { width: 10%; }
+            .table th:nth-child(2), .table td:nth-child(2) { width: 18%; }
+            .table th:nth-child(3), .table td:nth-child(3) { width: 22%; }
+            .table th:nth-child(4), .table td:nth-child(4) { width: 12%; }
+            .table th:nth-child(5), .table td:nth-child(5) { width: 12%; }
+            .table th:nth-child(6), .table td:nth-child(6) { width: 10%; }
+            .table th:nth-child(7), .table td:nth-child(7) { width: 8%; }
+            .table th:nth-child(8), .table td:nth-child(8) { width: 8%; }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                width: 95%;
+                max-width: 400px;
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .modal-header {
+                padding: 0.75rem 1rem;
+            }
+
+            .user-info-card {
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .credit-actions {
+                gap: 0.75rem;
+            }
+
+            .credit-action {
+                gap: 0.375rem;
+            }
+
+            .credit-action .btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .brand-text {
+                display: none;
+            }
+
+            .user-details {
+                display: none;
+            }
+
+            .table-container {
+                font-size: 0.75rem;
+            }
+
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.625rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-icon">🧠</div>
+                <div class="brand-text">
+                    <div class="brand-title">Thư Viện AI</div>
+                    <div class="brand-subtitle">Admin Panel</div>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-details">
+                        <div class="user-name" id="user-name">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="loadUsers()">
+                    <span>🔄</span>
+                    Refresh
+                </button>
+                <button class="btn btn-danger" onclick="logout()">
+                    <span>🚪</span>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="dashboard-grid">
+            <!-- Users Management Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">👥</div>
+                        <h2>User Management</h2>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-label">Total Credits:</span>
+                        <span class="stat-value" id="panel-total-credits">Loading...</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="users-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <div class="loading-text">Loading users...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Models Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">🤖</div>
+                        <h2>AI Models</h2>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="models-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <div class="loading-text">Loading models...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Credits Modal -->
+    <div id="editCreditsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💰 Cập Nhật Credits</h3>
+                <span class="modal-close" onclick="closeEditCreditsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="user-info-card">
+                    <p><strong>👤 User:</strong> <span id="editUserInfo"></span></p>
+                    <p><strong>💵 Credits hiện tại:</strong> <span id="currentCredits" style="color: var(--warning); font-weight: 700; font-size: 1.125rem;"></span></p>
+                </div>
+                
+                <div class="credit-actions">
+                    <div class="credit-action">
+                        <label for="addCredits">Thêm Credits:</label>
+                        <input type="number" id="addCredits" placeholder="Nhập số credits muốn thêm" min="1" step="1">
+                        <button onclick="modifyCredits('add')" class="btn btn-success">➕ Thêm</button>
+                    </div>
+                    
+                    <div class="credit-action">
+                        <label for="subtractCredits">Trừ Credits:</label>
+                        <input type="number" id="subtractCredits" placeholder="Nhập số credits muốn trừ" min="1" step="1">
+                        <button onclick="modifyCredits('subtract')" class="btn btn-warning">➖ Trừ</button>
+                    </div>
+                    
+                    <div class="credit-action">
+                        <label for="setCredits">Đặt Credits:</label>
+                        <input type="number" id="setCredits" placeholder="Nhập số credits mới" min="0" step="1">
+                        <button onclick="modifyCredits('set')" class="btn btn-primary">🔧 Đặt</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--gray-200);">
+                    <p style="margin: 0; font-size: 0.75rem; color: var(--gray-600);">
+                        <strong>💡 Gợi ý:</strong> Bạn có thể thêm, trừ hoặc đặt credits cho user. 
+                        Khi trừ credits, nếu số trừ lớn hơn số hiện có, credits sẽ về 0 (không âm).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit User</h3>
+                <span class="modal-close" onclick="closeEditUserModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="user-info-card">
+                    <p><strong>User ID:</strong> <span id="editUserId"></span></p>
+                    <p><strong>Username:</strong> <span id="editUsername"></span></p>
+                    <p><strong>Email:</strong> <span id="editEmail"></span></p>
+                </div>
+                
+                <div class="credit-actions">
+                    <div class="credit-action">
+                        <label for="editUserRole">Role:</label>
+                        <select id="editUserRole" class="credit-action input" style="padding: 0.625rem 0.875rem; border: 1px solid var(--gray-300); border-radius: var(--radius); background: var(--white); color: var(--gray-900); font-size: 0.875rem; width: 100%;">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="credit-action">
+                        <label for="editUserStatus">Status:</label>
+                        <select id="editUserStatus" class="credit-action input" style="padding: 0.625rem 0.875rem; border: 1px solid var(--gray-300); border-radius: var(--radius); background: var(--white); color: var(--gray-900); font-size: 0.875rem; width: 100%;">
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                    
+                    <div class="credit-action" style="margin-top: 1rem;">
+                        <button onclick="updateUser()" class="btn btn-primary" style="width: 100%;">Update User</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // ===== CONFIGURATION =====
+        // Sử dụng BACKEND_URL và ENDPOINTS từ CONFIG (đã được cấu hình trong config.js)
+        // Auto-detect HTTPS để tránh Mixed Content error
+        function getSafeBackendUrl() {
+            // Nếu trang đang HTTPS, luôn dùng domain hiện tại (không dùng IP)
+            if (window.location.protocol === 'https:') {
+                // Nếu có CONFIG và getSafeBackendUrl
+                if (window.CONFIG?.getSafeBackendUrl) {
+                    const url = window.CONFIG.getSafeBackendUrl();
+                    // Double check: nếu vẫn là IP, chuyển sang domain
+                    if (url && (url.includes('103.77.243.190') || url.match(/^\d+\.\d+\.\d+\.\d+/))) {
+                        return window.location.protocol + '//' + window.location.hostname;
+                    }
+                    return url;
+                }
+                // Nếu có CONFIG.BACKEND_URL
+                if (window.CONFIG?.BACKEND_URL) {
+                    let url = window.CONFIG.BACKEND_URL;
+                    // Nếu là IP, chuyển sang domain
+                    if (url.includes('103.77.243.190') || url.match(/^\d+\.\d+\.\d+\.\d+/)) {
+                        return window.location.protocol + '//' + window.location.hostname;
+                    }
+                    // Đảm bảo HTTPS
+                    if (url.startsWith('http://') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+                        url = url.replace('http://', 'https://');
+                    }
+                    return url;
+                }
+                // Fallback: dùng domain hiện tại với HTTPS
+                return window.location.protocol + '//' + window.location.hostname;
+            }
+            // HTTP: dùng CONFIG hoặc origin
+            return window.CONFIG?.BACKEND_URL || window.location.origin;
+        }
+        
+        const BACKEND_URL = getSafeBackendUrl();
+        let API = window.CONFIG?.API?.url('ADMIN') || BACKEND_URL + (window.CONFIG?.ENDPOINTS?.ADMIN || '/api/admin.php');
+        
+        // Final check: đảm bảo HTTPS và domain (không dùng IP)
+        if (window.location.protocol === 'https:') {
+            // Nếu là IP, chuyển sang domain
+            if (API.includes('103.77.243.190') || API.match(/http:\/\/\d+\.\d+\.\d+\.\d+/) || API.match(/https:\/\/\d+\.\d+\.\d+\.\d+/)) {
+                API = window.location.protocol + '//' + window.location.hostname + '/api/admin.php';
+            } else if (API.startsWith('http://') && !API.includes('localhost') && !API.includes('127.0.0.1')) {
+                API = API.replace('http://', 'https://');
+            }
+        }
+        
+        console.log('🔗 Admin API URL:', API);
+        
+        // Helper function to escape string for use in JavaScript string literals
+        function escapeJs(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        }
+        
+        // ===== AUTHENTICATION =====
+        function getToken() {
+            return localStorage.getItem('admin_token');
+        }
+        
+        async function ensureAuth() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = 'admin-login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        async function fetchJSON(url, options = {}) {
+            const token = getToken();
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    ...options.headers
+                }
+            });
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('admin_token');
+                    window.location.href = 'admin-login.html';
+                    return;
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return await response.json();
+        }
+        
+        // ===== DATA LOADING =====
+        async function loadUsers() {
+            const container = document.getElementById('users-container');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading users...</div>
+                </div>
+            `;
+            
+            try {
+                const data = await fetchJSON(API + '?action=users_all');
+                const users = data.data || [];
+                
+                let html = `
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Credits</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                let totalCredits = 0;
+                users.forEach(user => {
+                    const statusClass = user.is_active ? 'badge-active' : 'badge-inactive';
+                    const statusText = user.is_active ? 'Active' : 'Inactive';
+                    const roleClass = user.role === 'admin' ? 'badge-admin' : 'badge-user';
+                    // Xử lý credits: chuyển thành số nguyên, null/undefined = 0
+                    const userCredits = parseInt(user.credits) || 0;
+                    totalCredits += userCredits;
+                    const createdDate = new Date(user.created_at).toLocaleDateString('vi-VN');
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${user.id}</strong></td>
+                            <td><strong>${user.username}</strong></td>
+                            <td>${user.email}</td>
+                            <td>
+                                <span class="badge ${roleClass}" onclick="toggleUserRole(${user.id}, '${escapeJs(user.role)}', '${escapeJs(user.username)}')" style="cursor: pointer;" title="Click để đổi role">
+                                    ${user.role}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge ${statusClass}" onclick="toggleUserStatus(${user.id}, ${user.is_active ? 1 : 0}, '${escapeJs(user.username)}')" style="cursor: pointer;" title="Click để đổi status">
+                                    ${statusText}
+                                </span>
+                            </td>
+                            <td><strong style="color: var(--warning);">${userCredits.toLocaleString()}</strong></td>
+                            <td>${createdDate}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-success" onclick="openEditCreditsModal(${user.id}, '${escapeJs(user.username)}', ${userCredits})" title="Edit Credits">
+                                        💰 Credits
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})" title="Edit User">
+                                        ✏️ Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})" title="Delete User">
+                                        🗑️ Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table></div>';
+                container.innerHTML = html;
+                
+                // Update total credits
+                document.getElementById('panel-total-credits').textContent = totalCredits.toLocaleString();
+                
+            } catch (error) {
+                container.innerHTML = `<div class="message message-error">Error loading users: ${error.message}</div>`;
+            }
+        }
+        
+        async function loadModels() {
+            const container = document.getElementById('models-container');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading models...</div>
+                </div>
+            `;
+            
+            try {
+                const data = await fetchJSON(API + '?action=models');
+                const models = data.data || [];
+                
+                let html = '<div class="models-grid">';
+                models.forEach((model, index) => {
+                    html += `
+                        <div class="model-card">
+                            <div class="model-icon">🤖</div>
+                            <div class="model-name">${model}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                container.innerHTML = `<div class="message message-error">Error loading models: ${error.message}</div>`;
+            }
+        }
+        
+        // ===== USER ACTIONS =====
+        async function editUser(userId) {
+            try {
+                // Lấy thông tin user
+                const users = await fetchJSON(API + '?action=users_all');
+                const user = users.data.find(u => u.id === userId);
+                
+                if (!user) {
+                    alert('Không tìm thấy user!');
+                    return;
+                }
+                
+                // Hiển thị modal
+                document.getElementById('editUserId').textContent = user.id;
+                document.getElementById('editUsername').textContent = user.username || '-';
+                document.getElementById('editEmail').textContent = user.email || '-';
+                document.getElementById('editUserRole').value = user.role || 'user';
+                document.getElementById('editUserStatus').value = user.is_active ? '1' : '0';
+                
+                // Store current user ID
+                window.currentEditUserId = userId;
+                
+                // Hiển thị modal
+                document.getElementById('editUserModal').style.display = 'block';
+                
+            } catch (error) {
+                alert('Lỗi khi tải thông tin user: ' + error.message);
+            }
+        }
+        
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').style.display = 'none';
+            window.currentEditUserId = null;
+        }
+        
+        async function updateUser() {
+            const userId = window.currentEditUserId;
+            if (!userId) return;
+            
+            const role = document.getElementById('editUserRole').value;
+            const isActive = document.getElementById('editUserStatus').value === '1';
+            
+            // Kiểm tra nếu admin đang cố thay đổi quyền của chính mình
+            try {
+                const adminUserStr = localStorage.getItem('admin_user');
+                if (adminUserStr && adminUserStr.trim()) {
+                    const adminUser = JSON.parse(adminUserStr);
+                    if (adminUser.id === userId) {
+                        // Lấy thông tin user hiện tại
+                        const users = await fetchJSON(API + '?action=users_all');
+                        const user = users.data.find(u => u.id === userId);
+                        if (user && user.role === 'admin' && role === 'user') {
+                            alert('Bạn không thể tự xóa quyền admin của chính mình!');
+                            return;
+                        }
+                        if (user && user.is_active === 1 && !isActive) {
+                            alert('Bạn không thể tự vô hiệu hóa tài khoản của chính mình!');
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                // Ignore error
+            }
+            
+            try {
+                const response = await fetchJSON(API + `?action=update_user&id=${userId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        role: role,
+                        is_active: isActive
+                    })
+                });
+                
+                if (response.success) {
+                    alert('Cập nhật user thành công!');
+                    closeEditUserModal();
+                    loadUsers(); // Reload users list
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể cập nhật user'));
+                }
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+        
+        async function toggleUserRole(userId, currentRole, username) {
+            // Kiểm tra nếu admin đang cố thay đổi quyền của chính mình
+            try {
+                const adminUserStr = localStorage.getItem('admin_user');
+                if (adminUserStr && adminUserStr.trim()) {
+                    const adminUser = JSON.parse(adminUserStr);
+                    if (adminUser.id === userId && currentRole === 'admin') {
+                        alert('Bạn không thể tự xóa quyền admin của chính mình!');
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Ignore error
+            }
+            
+            const newRole = currentRole === 'admin' ? 'user' : 'admin';
+            if (!confirm(`Bạn có chắc chắn muốn đổi role của user "${username}" từ "${currentRole}" sang "${newRole}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetchJSON(API + `?action=update_user&id=${userId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        role: newRole
+                    })
+                });
+                
+                if (response.success) {
+                    alert(`Đã đổi role của user "${username}" thành "${newRole}"!`);
+                    loadUsers(); // Reload users list
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể cập nhật role'));
+                }
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+        
+        async function toggleUserStatus(userId, currentStatus, username) {
+            // Kiểm tra nếu admin đang cố vô hiệu hóa chính mình
+            try {
+                const adminUserStr = localStorage.getItem('admin_user');
+                if (adminUserStr && adminUserStr.trim()) {
+                    const adminUser = JSON.parse(adminUserStr);
+                    if (adminUser.id === userId && currentStatus === 1) {
+                        alert('Bạn không thể tự vô hiệu hóa tài khoản của chính mình!');
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Ignore error
+            }
+            
+            const newStatus = currentStatus === 1 ? 0 : 1;
+            const statusText = newStatus === 1 ? 'Active' : 'Inactive';
+            if (!confirm(`Bạn có chắc chắn muốn đổi status của user "${username}" sang "${statusText}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetchJSON(API + `?action=update_user&id=${userId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        is_active: newStatus
+                    })
+                });
+                
+                if (response.success) {
+                    alert(`Đã đổi status của user "${username}" thành "${statusText}"!`);
+                    loadUsers(); // Reload users list
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể cập nhật status'));
+                }
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+        
+        async function deleteUser(userId) {
+            // Kiểm tra nếu admin đang cố xóa chính mình
+            try {
+                const adminUserStr = localStorage.getItem('admin_user');
+                if (adminUserStr && adminUserStr.trim()) {
+                    const adminUser = JSON.parse(adminUserStr);
+                    if (adminUser.id === userId) {
+                        alert('Bạn không thể xóa tài khoản của chính mình!');
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Ignore error
+            }
+            
+            if (!confirm(`Bạn có chắc chắn muốn xóa user ${userId}? Hành động này không thể hoàn tác!`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetchJSON(API + `?action=delete_user&id=${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.success) {
+                    alert('Xóa user thành công!');
+                    loadUsers(); // Reload users list
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể xóa user'));
+                }
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            }
+        }
+        
+        // ===== MODAL FUNCTIONS =====
+        function openEditCreditsModal(userId, username, currentCredits) {
+            document.getElementById('editUserInfo').textContent = username;
+            document.getElementById('currentCredits').textContent = currentCredits.toLocaleString();
+            document.getElementById('editCreditsModal').style.display = 'block';
+            
+            // Store current user ID and credits for modification
+            window.currentEditUserId = userId;
+            window.currentEditCredits = currentCredits;
+            
+            // Clear form
+            document.getElementById('addCredits').value = '';
+            document.getElementById('subtractCredits').value = '';
+            document.getElementById('setCredits').value = '';
+            
+            // Focus on first input
+            setTimeout(() => {
+                document.getElementById('addCredits').focus();
+            }, 100);
+        }
+        
+        function closeEditCreditsModal() {
+            document.getElementById('editCreditsModal').style.display = 'none';
+            // Clear form
+            document.getElementById('addCredits').value = '';
+            document.getElementById('subtractCredits').value = '';
+            document.getElementById('setCredits').value = '';
+            // Clear stored data
+            window.currentEditUserId = null;
+            window.currentEditCredits = null;
+        }
+        
+        async function modifyCredits(action) {
+            const userId = window.currentEditUserId;
+            if (!userId) {
+                alert('Lỗi: Không tìm thấy user ID!');
+                return;
+            }
+            
+            let amount = 0;
+            let operation = '';
+            let inputElement = null;
+            let buttonElement = null;
+            
+            switch(action) {
+                case 'add':
+                    inputElement = document.getElementById('addCredits');
+                    buttonElement = inputElement?.nextElementSibling;
+                    amount = parseInt(inputElement?.value);
+                    operation = 'add';
+                    break;
+                case 'subtract':
+                    inputElement = document.getElementById('subtractCredits');
+                    buttonElement = inputElement?.nextElementSibling;
+                    amount = parseInt(inputElement?.value);
+                    operation = 'subtract';
+                    break;
+                case 'set':
+                    inputElement = document.getElementById('setCredits');
+                    buttonElement = inputElement?.nextElementSibling;
+                    amount = parseInt(inputElement?.value);
+                    operation = 'set';
+                    break;
+            }
+            
+            // Validate input
+            if (!inputElement || !inputElement.value.trim()) {
+                alert('Vui lòng nhập số credits!');
+                inputElement?.focus();
+                return;
+            }
+            
+            if (isNaN(amount) || amount < 0) {
+                alert('Vui lòng nhập số credits hợp lệ (số nguyên dương)!');
+                inputElement?.focus();
+                return;
+            }
+            
+            if (amount === 0 && operation !== 'set') {
+                alert('Số credits phải lớn hơn 0!');
+                inputElement?.focus();
+                return;
+            }
+            
+            // Get current credits for confirmation
+            const currentCreditsText = document.getElementById('currentCredits').textContent;
+            const currentCredits = parseInt(currentCreditsText.replace(/[^\d]/g, '')) || 0;
+            let newCredits = currentCredits;
+            
+            switch(operation) {
+                case 'add':
+                    newCredits = currentCredits + amount;
+                    break;
+                case 'subtract':
+                    if (amount > currentCredits) {
+                        if (!confirm(`Số credits hiện tại là ${currentCredits.toLocaleString()}. Bạn muốn trừ ${amount.toLocaleString()}? Số credits sẽ thành ${Math.max(0, currentCredits - amount).toLocaleString()} (không âm).`)) {
+                            return;
+                        }
+                    }
+                    newCredits = Math.max(0, currentCredits - amount);
+                    break;
+                case 'set':
+                    if (amount !== currentCredits && !confirm(`Bạn có chắc muốn đặt credits từ ${currentCredits.toLocaleString()} thành ${amount.toLocaleString()}?`)) {
+                        return;
+                    }
+                    newCredits = amount;
+                    break;
+            }
+            
+            // Show loading on button
+            const originalButton = buttonElement;
+            let originalText = '';
+            if (originalButton) {
+                originalText = originalButton.innerHTML;
+                originalButton.disabled = true;
+                originalButton.innerHTML = '<span>⏳</span> Đang cập nhật...';
+            }
+            
+            try {
+                const response = await fetchJSON(API + '?action=modify_credits', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        user_id: userId,
+                        operation: operation,
+                        amount: amount
+                    })
+                });
+                
+                if (response.success) {
+                    // Show success message
+                    showMessage('success', `✅ Cập nhật credits thành công! Từ ${currentCredits.toLocaleString()} thành ${response.data?.new_credits?.toLocaleString() || newCredits.toLocaleString()}.`);
+                    closeEditCreditsModal();
+                    loadUsers(); // Reload users list
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể cập nhật credits'));
+                }
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+            } finally {
+                // Restore button
+                if (originalButton && originalText) {
+                    originalButton.disabled = false;
+                    originalButton.innerHTML = originalText;
+                }
+            }
+        }
+        
+        // Helper function to show messages
+        function showMessage(type, message) {
+            const container = document.getElementById('users-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+            messageDiv.textContent = message;
+            container.insertBefore(messageDiv, container.firstChild);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 5000);
+        }
+        
+        function logout() {
+            localStorage.removeItem('admin_token');
+            window.location.href = 'admin-login.html';
+        }
+        
+        // ===== MODAL EVENTS =====
+        window.onclick = function(event) {
+            const creditsModal = document.getElementById('editCreditsModal');
+            const userModal = document.getElementById('editUserModal');
+            if (event.target === creditsModal) {
+                closeEditCreditsModal();
+            }
+            if (event.target === userModal) {
+                closeEditUserModal();
+            }
+        }
+        
+        // ===== INITIALIZATION =====
+        async function init() {
+            if (!await ensureAuth()) return;
+            
+            // Load admin info
+            try {
+                const userData = await fetchJSON(API + '?action=admin_info');
+                if (userData.success) {
+                    const username = userData.data.username || 'Admin';
+                    document.getElementById('user-name').textContent = username;
+                    document.getElementById('user-avatar').textContent = username.charAt(0).toUpperCase();
+                }
+            } catch (error) {
+                console.error('Error loading admin info:', error);
+            }
+            
+            // Load data
+            await loadUsers();
+            await loadModels();
+        }
+        
+        // ===== START =====
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
